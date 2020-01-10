@@ -1,0 +1,17 @@
+function [ eph ] = Ephemeris( Y0, stepLength, numSteps )
+
+stepTimes = zeros( numSteps, 1 );
+
+for stepIter = 1 : numSteps
+    
+   stepTimes( stepIter ) = stepIter * stepLength;
+    
+end
+
+
+[ t, Y ] = ode45( @SatelliteAcceleration, stepTimes, Y0 );
+
+eph = [
+
+end
+
