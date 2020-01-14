@@ -1,6 +1,6 @@
-function [ latitude, longitude, altitude ] = ECEFToLLA( rECI )
+function [ latitude, longitude, altitude ] = ECEFToLLA( rECEF )
 
-lla = ecef2lla(rECI, 'WGS84');
+lla = ecef2lla(rECEF', 'WGS84');
 
 latitude = lla(1); % degrees
 longitude = lla(2); % degrees
