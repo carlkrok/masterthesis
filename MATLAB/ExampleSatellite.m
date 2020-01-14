@@ -7,7 +7,7 @@ R_PQWToECI = RotMat_PQWToECI( i, O, w );
 r_ECI = R_PQWToECI * r_PQW;
 v_ECI = R_PQWToECI * v_PQW;
 
-Y0 = [ r_ECI, v_ECI ];
+Y0 = [ r_ECI; v_ECI ];
 
 t_sat = SatellitePeriod( MU_EARTH, a );
 
