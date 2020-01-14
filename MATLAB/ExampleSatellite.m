@@ -8,13 +8,14 @@ r_ECI = R_PQWToECI * r_PQW;
 v_ECI = R_PQWToECI * v_PQW;
 
 Y0 = [ r_ECI; v_ECI ];
+t0 = 0;
 
 t_sat = SatellitePeriod( MU_EARTH, a );
 
 stepLength = 100;
 numSteps = floor( t_sat / stepLength );
 
-eph = Ephemeris( Y0, stepLength, numSteps );
+eph = Ephemeris( Y0, t0, stepLength, numSteps );
 
 figure(1)
 hold on
