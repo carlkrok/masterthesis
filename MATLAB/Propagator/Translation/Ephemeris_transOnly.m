@@ -9,7 +9,7 @@ for stepIter = 1 : numSteps
 end
 
 
-[ t, Y ] = ode45( @SatelliteTotalAcceleration, stepTimes, Y0 );
+[ t, Y ] = ode45( @SatelliteTranslationalAcceleration, stepTimes, Y0 );
 
 eph = [ t, Y ];
 
