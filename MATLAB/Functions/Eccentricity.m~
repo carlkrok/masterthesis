@@ -1,6 +1,0 @@
-function [ e ] = Eccentricity(inputArg1,inputArg2)
-% a is the semi
-e = 1 - (r_periapsis / a ); 
-
-end
-
