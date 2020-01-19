@@ -1,7 +1,7 @@
-function [ r_eci, v_eci, a_eci ] = ECEFToECI( utc, r_ecef, v_ecef, a_ecef )
+function [ r_eci, v_eci, a_eci ] = ECEFToECI( mjd, r_ecef, v_ecef, a_ecef )
 
-
-mjd = mjuliandate(utc);
+mjdconv = mjd+678942;
+utc = datevec(mjdconv);
 
 dUT1=deltaUT1(mjd);
 pm = polarMotion(mjd)*180/pi; % 'action', 'none'
