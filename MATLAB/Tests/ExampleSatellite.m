@@ -1,6 +1,6 @@
 
 run earthParameters;
-run initialConditions_Satellite1;
+run Satellite001;
 
 t0_UTC = [2016 10 31 12 56 37.67];
 t0_MJD = mjuliandate(t0_UTC);

@@ -24,14 +24,32 @@ aDiff = a_ECI - a0_ECI
 %%
 
 [ latitude, longitude, altitude ] = ECEFToLLA( r_ECEF );
-
 [ r2_ECEF ] = LLAToECEF( latitude, longitude, altitude );
+r2_ECEF = r2_ECEF';
 
-rDiff = r2_ECEF - r_ECEF
+rDiff_1 = r2_ECEF - r_ECEF
+
+[ latitude, longitude, altitude ] = ECEFToLLA( r2_ECEF );
+[ r3_ECEF ] = LLAToECEF( latitude, longitude, altitude );
+r3_ECEF = r3_ECEF';
+
+rDiff_2 = r3_ECEF - r2_ECEF
+
+[ latitude, longitude, altitude ] = ECEFToLLA( r3_ECEF );
+[ r4_ECEF ] = LLAToECEF( latitude, longitude, altitude );
+r4_ECEF = r4_ECEF';
+
+rDiff_3 = r4_ECEF - r3_ECEF
 
 %%
 
 
+[r_ECEF_fn1, v_ECEF_fn1, a_ECEF_fn1] = ECIToECEF( MJD, r0_ECI, v0_ECI, a0_ECI );
+r_ECEF_fn2 = posECIToECEF( MJD, r0_ECI );
+r_ECI_fn2 = posECEFToECI( MJD, r_ECEF_fn2 );
+
+fnDiff = r_ECEF_fn2 - r_ECEF_fn1
+fn2Acc = r_ECI_fn2 - r0_ECI
 
 
 
