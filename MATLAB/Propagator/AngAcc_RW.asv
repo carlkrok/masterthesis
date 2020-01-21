@@ -1,0 +1,6 @@
+function [ wdot ] = AngAcc_RW( t, Y, qRefTraj, sat_I_mat, sat_rw_rotMat )
+
+
+
+end
+

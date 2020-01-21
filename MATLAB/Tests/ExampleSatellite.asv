@@ -32,8 +32,6 @@ end
 
 rwData.rotMat = sat_rw_rotMat;
 rwData.maxVel = sat_rw_maxVel;
-rwData.maxAcc = sat_rw_maxAcc;
-rwData.inertia = sat_rw_inertia;
 
 satData.M_mat = sat_M_mat;
 satData.I_mat = sat_I_mat;
