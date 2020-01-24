@@ -12,16 +12,9 @@ v_ECI = R_PQWToECI * v_PQW;
 
 sat_period = SatellitePeriod( MU_EARTH, sat_a );
 
-stepLength = 0.001; % [s]
-numSteps = floor( (1 * sat_period) / stepLength );
+stepLength = 0.01; % [s]
+numSteps = 6000; %floor( (1 * sat_period) / stepLength );
 stepTimes = zeros( 1, numSteps );
-
-qRefTraj = ones( 4, numSteps );
-quarterNum = floor(numSteps/4);
-qRefTraj(:, 1:quarterNum) = sat_q_ECI .* ones( 4, quarterNum );
-qRefTraj(:, quarterNum+1:2*quarterNum) = EulerToQuaternion(pi/2,0,0) .* ones( 4, quarterNum );
-qRefTraj(:, 2*quarterNum+1:3*quarterNum) = sat_q_ECI .* ones( 4, quarterNum );
-qRefTraj(:, 3*quarterNum+1:end) = EulerToQuaternion(0,pi/2,0) .* ones( 4, numSteps - 3*quarterNum );
 
 Y0 = [ r_ECI; v_ECI; sat_q_ECI; sat_w_ECI; sat_rw_vel ];
 t0 = t0_MJD;
@@ -38,7 +31,11 @@ rwData.inertia = sat_rw_inertia;
 satData.M_mat = sat_M_mat;
 satData.I_mat = sat_I_mat;
 
-eph = Ephemeris( Y0, t0, stepTimes, qRefTraj, MU_EARTH, satData, rwData );
+missionData.mu = MU_EARTH;
+missionData.pointingTarget_LLA = [63.4184922, 10.4005655, 0]; 
+missionData.pointingTarget_ECEF = LLAToECEF( missionData.pointingTarget_LLA );
+
+eph = Ephemeris( Y0, stepTimes, missionData, satData, rwData );
 
 %%
 

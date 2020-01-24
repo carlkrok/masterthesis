@@ -1,6 +1,6 @@
-function [ rECEF ] = LLAToECEF( latitude, longitude, altitude )
+function [ rECEF ] = LLAToECEF( LatLonAlt )
 
-rECEF = lla2ecef( [latitude, longitude, altitude], 'WGS84');
+rECEF = lla2ecef( LatLonAlt, 'WGS84')';
 
 end
 
