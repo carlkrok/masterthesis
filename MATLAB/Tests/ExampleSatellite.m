@@ -13,11 +13,11 @@ v_ECI = R_PQWToECI * v_PQW;
 
 sat_period = SatellitePeriod( MU_EARTH, sat_a );
 
-Y0 = [ r_ECI; v_ECI; sat_q_ECI; sat_w_ECI; sat_rw_h ];
+Y0 = [ r_ECI; v_ECI; sat_q_ECI; sat_w_body; sat_rw_w ];
 t0 = t0_MJD;
 
-stepLength = 0.2; % [s]
-numSteps = 30; %floor( (1 * sat_period) / stepLength );
+stepLength = 0.1; % [s]
+numSteps = 10; %floor( (1 * sat_period) / stepLength );
 stepTimes = zeros( 1, numSteps );
 for stepIter = 1 : numSteps
    stepTimes( stepIter ) = t0 + stepIter * stepLength;
@@ -25,6 +25,7 @@ end
 
 rwData.A_mat = sat_rw_A_mat;
 rwData.I_mat = sat_rw_I_mat;
+rwData.rotMat = sat_rw_rotMat;
 rwData.maxTorque = sat_rw_maxTorque;
 rwData.maxMomentum = sat_rw_maxMomentum;
 rwData.maxVelocity = sat_rw_maxVel;
