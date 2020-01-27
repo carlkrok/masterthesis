@@ -1,10 +1,13 @@
-function [ dY ] = SatelliteAcceleration( t, Y, mu, pointingTarget_ECEF, sat_M_mat, sat_I_mat, rw_rotMat, rw_I_mat, rw_maxTorque, rw_maxMomentum )
+function [ dY ] = SatelliteAcceleration( t, Y, mu, pointingTarget_ECEF, sat_M_mat, sat_I_mat, rw_A_mat, rw_A_MPinv_mat, rw_I_mat, rw_maxTorque, rw_maxMomentum )
 
 r_ECI = Y(1:3);
 v_ECI = Y(4:6);
 q_ECI = quatnormalize(Y(7:10)')';
 w_sat_body = Y(11:13);
-w_rw = Y(14:17);
+rw_h = Y(14:17);
+
+disturbance_torques = zeros(3,1);
+control_torques = zeros(3,1);
 
 r_ECEF = posECIToECEF(t, r_ECI);
 
@@ -41,18 +44,16 @@ rdot = v_ECI;
 vdot = a_Kepler;
 qdot =  T_q(q_ECI)*w_sat_body;
 
-wdot_commanded_rw = zeros(4,1);
-[rw_torque_body, wdot_rw] = Forces_RW( w_rw, wdot_commanded_rw, rw_rotMat, rw_I_mat, rw_maxTorque, rw_maxMomentum );
+rw_appliedTorque = zeros(3,1);
+[ rw_torque_body, rw_hdot ] = Forces_RW( w_sat_body, rw_appliedTorque, rw_h, rw_A_mat, rw_A_MPinv_mat, rw_maxTorque, rw_maxMomentum );
 
-
-disturbance_torques = zeros(3,1);
-control_torques = rw_torque_body
+control_torques = control_torques + rw_torque_body;
 
 wdot_sat = (sat_I_mat) \ ( -1 .* cross(w_sat_body, (sat_I_mat * w_sat_body)) + control_torques + disturbance_torques );
 %0.5.*(w_sat_ref - w_sat_ECI);
 
 
-dY = [ rdot; vdot; qdot; wdot_sat; wdot_rw ];
+dY = [ rdot; vdot; qdot; wdot_sat; rw_hdot ];
 
 end
 

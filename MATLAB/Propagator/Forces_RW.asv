@@ -1,0 +1,50 @@
+function [  ] = Forces_RW( w, wdot_commanded, rotMat, I_mat, maxTorque, maxVelocity )
+
+numRW = length(w);
+
+torque_body = zeros(3,1);
+wdot = zeros(numRW,1);
+
+for rwIter = 1:numRW
+    if abs(w(rwIter)) >= maxVelocity && sign(wdot_commanded(rwIter)) == sign(w(rwIter))
+        wdot(rwIter) = 0;
+    else
+        this_torque = rotMat(:,:,rwIter)*I_mat*[0;0;wdot_commanded(rwIter)];
+        if norm(this_torque) > maxTorque
+            satFactor = maxTorque / norm(this_torque);
+            this_torque = this_torque ./ satFactor;
+            wdot(rwIter) = wdot_commanded(rwIter) ./ satFactor;
+        else
+            wdot(rwIter) = wdot_commanded(rwIter);  
+        end
+        torque_body = torque_body + this_torque;
+    end
+end
+
+end
+
+% function [ torque_body, wdot ] = Forces_RW( w, wdot_commanded, rotMat, I_mat, maxTorque, maxVelocity )
+% 
+% numRW = length(w);
+% 
+% torque_body = zeros(3,1);
+% wdot = zeros(numRW,1);
+% 
+% for rwIter = 1:numRW
+%     if abs(w(rwIter)) >= maxVelocity && sign(wdot_commanded(rwIter)) == sign(w(rwIter))
+%         wdot(rwIter) = 0;
+%     else
+%         this_torque = rotMat(:,:,rwIter)*I_mat*[0;0;wdot_commanded(rwIter)];
+%         if norm(this_torque) > maxTorque
+%             satFactor = maxTorque / norm(this_torque);
+%             this_torque = this_torque ./ satFactor;
+%             wdot(rwIter) = wdot_commanded(rwIter) ./ satFactor;
+%         else
+%             wdot(rwIter) = wdot_commanded(rwIter);  
+%         end
+%         torque_body = torque_body + this_torque;
+%     end
+% end
+% 
+% end
+

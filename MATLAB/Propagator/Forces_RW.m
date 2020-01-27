@@ -1,15 +1,7 @@
-function [ torque_body, wdot ] = Forces_RW( w, wdot_commanded, rotMat, I_mat, maxTorque, maxMomentum )
+function [ torque_body, hdot ] = Forces_RW( w_sat, appliedTorque, h_rw, A_mat, A_MPinv_mat, maxTorque, maxMomentum )
 
-numRW = length(w);
+hdot = A_MPinv_mat * ( cross( A_mat * h_rw, w_sat ) - appliedTorque );
 
-torque_body = zeros(3,1);
-wdot = zeros(numRW,1);
-
-for rwIter = 1:numRW
-   
-    if 
-    
-end
+torque_body = -1 * A_mat * hdot - cross( w_sat, A_mat * h_rw );
 
 end
-

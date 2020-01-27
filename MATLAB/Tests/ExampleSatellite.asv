@@ -13,7 +13,7 @@ v_ECI = R_PQWToECI * v_PQW;
 
 sat_period = SatellitePeriod( MU_EARTH, sat_a );
 
-Y0 = [ r_ECI; v_ECI; sat_q_ECI; sat_w_body; sat_rw_h ];
+Y0 = [ r_ECI; v_ECI; sat_q_ECI; sat_w_body; sat_rw_w ];
 t0 = t0_MJD;
 
 stepLength = 0.1; % [s]
@@ -26,6 +26,7 @@ end
 rwData.A_mat = sat_rw_A_mat;
 rwData.A_MPinv_mat = sat_rw_A_MPinv_mat;
 rwData.I_mat = sat_rw_I_mat;
+rwData.rotMat = sat_rw_rotMat;
 rwData.maxTorque = sat_rw_maxTorque;
 rwData.maxMomentum = sat_rw_maxMomentum;
 rwData.maxVelocity = sat_rw_maxVel;
@@ -104,25 +105,9 @@ hold off
 
 %%
 
-rw_momentum = eph(:,15:18);
-figure(4)
-hold on
-grid on
-x = 0:numSteps;
-tiledlayout(4,1)
-nexttile
-plot(x, rw_momentum(:,1))
-title('RW 1')
-nexttile
-plot(x, rw_momentum(:,2))
-title('RW 2')
-nexttile
-plot(x, rw_momentum(:,3))
-title('RW 3')
-nexttile
-plot(x, rw_momentum(:,4))
-title('RW 4')
-hold off
+rw_momentum = eph(:,8:11);
+
+
 
 
 
