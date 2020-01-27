@@ -27,6 +27,7 @@ rwData.A_mat = sat_rw_A_mat;
 rwData.I_mat = sat_rw_I_mat;
 rwData.maxTorque = sat_rw_maxTorque;
 rwData.maxMomentum = sat_rw_maxMomentum;
+rwData.maxVelocity = sat_rw_maxVel;
 
 satData.M_mat = sat_M_mat;
 satData.I_mat = sat_I_mat;

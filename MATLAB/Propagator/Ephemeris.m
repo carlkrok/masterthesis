@@ -6,6 +6,7 @@ opts = odeset('RelTol',1e-6,'AbsTol',1e-6);
 
 for stepIter = 1:length(stepTimes)
     if norm(Y(stepIter,7:10)) > 1e-6
+        disp('Non-unit quaternion found in step ', stepIter, ' of ephemeris, will be normalized.')
         Y(stepIter,7:10) = quatnormalize( Y(stepIter,7:10) );
     end
 end
