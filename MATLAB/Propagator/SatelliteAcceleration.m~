@@ -66,11 +66,10 @@ b_earth = MagneticField( mjd, latitude, longitude, altitude );
 
 if enableRW
     rw_appliedTorque = zeros(3,1);
-    [t_rw, rw_hdot] = RW_Torque( w_sat_body, rw_appliedTorque, rw_h, rw_A_mat, rw_A_MPinv_mat, rw_maxTorque, rw_maxMomentum );
+    t_rw, rw_hdot = RW_Torque( w_sat_body, rw_appliedTorque, rw_h, rw_A_mat, rw_A_MPinv_mat, rw_maxTorque, rw_maxMomentum );
     control_torques = control_torques + t_rw;
 else 
-    rw_hdot = zeros(4,1);
-end
+    rw_hdot = zeros
 
 wdot_sat = (sat_I_mat) \ ( -1 .* cross(w_sat_body, (sat_I_mat * w_sat_body)) + control_torques + disturbance_torques );
 

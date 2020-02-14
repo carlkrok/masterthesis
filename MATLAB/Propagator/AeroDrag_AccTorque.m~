@@ -1,0 +1,6 @@
+function [ a, t ] = AeroDrag_AccTorque(  )
+
+a = 0.5 * (1 / mass) 
+
+end
+
