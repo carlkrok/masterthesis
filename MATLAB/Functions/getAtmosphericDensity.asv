@@ -1,0 +1,9 @@
+function dens = getAtmosphericDensity( )
+
+global DENSITY_MAX_500KM
+global DENSITY_MIN_500KM
+
+dens = 0.5*(
+
+end
+

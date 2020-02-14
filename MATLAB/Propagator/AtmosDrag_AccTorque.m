@@ -1,8 +1,14 @@
-function [ a, t ] = AtmosDrag_AccTorque( satMass, satVel, satPos, coeffDrag, area, omergaEarth )
+function [ F_drag, T_drag ] = AtmosDrag_ForceTorque( satVel, satPos, coeffDrag, area, omegaEarth )
 
-vRel = satVel - cross( [0; 0; omergaEarth], satPos );
+rho = getAtmosphericDensity( );
 
-a = 0.5 * (1 / satMass) * coeffDrag * area * rho * norm(vRel)^2 * (vRel / norm(vRel));
+vRel = satVel - cross( [0; 0; omegaEarth], satPos );
+
+F_drag = 0.5 * coeffDrag * area * rho * norm(vRel)^2 * (vRel / norm(vRel));
+
+center_drag = [0;0;1];
+
+T_drag = cross( center_drag, F_drag );
 
 end 
 
