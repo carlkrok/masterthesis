@@ -37,7 +37,11 @@ end
     
 
 satData.M_mat = sat.constr.M_mat;
+satData.mass = sat.constr.mass;
 satData.I_mat = sat.constr.I_mat;
+satData.surfaceCenterVectorsAndAreas = sat.constr.surfaceCenterVectorsAndAreas;
+satData.coeffR = sat.constr.coeffR;
+satData.coeffDrag = sat.constr.coeffDrag;
 
 missionData.mjd0 = mjd0;
 missionData.mu = MU_EARTH;

@@ -20,13 +20,13 @@ x = 0:numSteps-1;
 tiledlayout(3,1)
 nexttile
 plot(x, xAxisRot.*(180/pi))
-title('X-Axis')
+title('Euler angle X-Axis orientation')
 nexttile
 plot(x, yAxisRot.*(180/pi))
-title('Y-Axis')
+title('Euler angle Y-Axis orientation')
 nexttile
 plot(x, zAxisRot.*(180/pi))
-title('Z-Axis')
+title('Euler angle Z-Axis orientation')
 hold off
 
 end

@@ -1,7 +1,0 @@
-function [ a, t ] = SRP_AccTorque( sateMass )
-
-
-
-
-end
-

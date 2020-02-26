@@ -1,6 +1,6 @@
 function dens = getAtmosphericDensity( r )
 
-if norm(r) > 520 || norm(r) < 480
+if norm(r) > 520 * 10^3 || norm(r) < 480 * 10^3
     error("Satellite outside of Atmospheric Density range")
 end
 

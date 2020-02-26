@@ -6,9 +6,10 @@ function [ xAngle, yAngle, zAngle ] = RotMatToEuler( R )
 % Date:      2001-06-14  
 % Revisions: 2007-09-03  Test for singular solution theta = +-90 deg has been improved
 
-if abs(R(3,1))>1.0
-    error('Solution is singular for theta = +- 90 degrees'); 
-end
+% if abs(R(3,1))>1.0
+%     abs(R(3,1))-1.0
+%     error('Solution is singular for theta = +- 90 degrees'); 
+% end
  
 xAngle   = atan2(R(3,2),R(3,3));
 yAngle = -asin(R(3,1));
