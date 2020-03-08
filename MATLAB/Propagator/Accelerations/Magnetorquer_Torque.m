@@ -1,6 +1,6 @@
-function t_body = Magnetorquer_Torque( magneticField, appliedCurrent )
+function t_body = Magnetorquer_Torque( m_body, b_earth_body )
 
-t_body = cross( satelliteDipole, magneticField);
+t_body = cross( m_body, b_earth_body);
 
 end
 

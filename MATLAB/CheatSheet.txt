@@ -18,6 +18,10 @@ Status vector Y:
         15:     RW 2 momentum   Energy
         16:     RW 3 momentum   Energy
         17:     RW 4 momentum   Energy
+        18:     RefQuat eta     Orient
+        19:     RefQuat eps 1   Orient
+        20:     RefQuat eps 2   Orient
+        21:     RefQuat eps 3   Orient
 
     Ephemeris vector:
         1:      Time            Time
@@ -38,6 +42,11 @@ Status vector Y:
         16:     RW 2 momentum   Energy
         17:     RW 3 momentum   Energy
         18:     RW 4 momentum   Energy
+        19:     RefQuat eta     Orient
+        20:     RefQuat eps 1   Orient
+        21:     RefQuat eps 2   Orient
+        22:     RefQuat eps 3   Orient
 
 
-
+Bons Wie -> Quaternion Space ...
+Momentum management

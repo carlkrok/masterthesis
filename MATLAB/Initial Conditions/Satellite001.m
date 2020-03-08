@@ -45,11 +45,11 @@ sat.constr.surfaceCenterVectorsAndAreas = [ ...
 %% Satellite initial condition
 
 % Initial orientation quaternion and angular velocity
-sat.initCond.q_ECI = EulerToQuaternion(0,pi/4,0);
-sat.initCond.w_body = [0; 0; 1e-2];
+sat.initCond.q_ECI = EulerToQuaternion(pi/4,pi/4, pi/4); % (0,0,0); %
+sat.initCond.w_body = [0; 0; 0];
 % Initial orbit parameters
 sat.initCond.orb_T = 0;
-sat.initCond.orb_i = 75;
+sat.initCond.orb_i = 97;
 sat.initCond.orb_O = 0;
 sat.initCond.orb_w = 0;
 
@@ -60,6 +60,32 @@ sat.initCond.orb_r_p = 500 * 10^3 + R_EARTH;
 sat.initCond.orb_a = 0.5 * ( sat.initCond.orb_r_a + sat.initCond.orb_r_p );
 sat.initCond.orb_e = Eccentricity( sat.initCond.orb_r_p, sat.initCond.orb_a);
 sat.initCond.orb_h = MomentumNorm( MU_EARTH, sat.initCond.orb_a, sat.initCond.orb_e );
+
+
+%% Propulsion
+% Based on water propulsion from https://steamjet.space
+
+sat.propulsion.exists = true;
+
+sat.propulsion.minThrust = 15 * 10^3; % N
+sat.propulsion.maxThrust = 20 * 10^3; % N
+
+sat.propulsion.xArm = sat.constr.dim_x/2;
+sat.propulsion.yArm = sat.constr.dim_y/2;
+sat.propulsion.zArm = sat.constr.dim_z/2;
+
+
+%% Magnetorquer
+
+sat.mtq.exists = true;
+
+sat.mtq.maxDipoleMoment = 2*0.42;
+
+sat.mtq.resistance = 5^2 / 0.86; % Voltage squared over power
+
+sat.mtq.alpha = 0.42/5; % nS/R = m/V 
+
+
 
 
 %% Reaction Wheels configuration

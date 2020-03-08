@@ -1,4 +1,5 @@
-function [ eph ] = SimulateSatellite( satelliteFilename, mjd0, stepTimes, simConfig )
+function [ eph ] = SimulateSatellite( satelliteFilename, mjd0, ...
+    stepTimes, simConfig )
 
 global MU_EARTH
 global R_EARTH
@@ -13,7 +14,8 @@ R_PQWToECI = RotMat_PQWToECI( sat.initCond.orb_i, sat.initCond.orb_O, ...
 r_ECI = R_PQWToECI * r_PQW;
 v_ECI = R_PQWToECI * v_PQW;
 
-Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.h ];
+Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.h; ...
+    simConfig.referenceQuaternion ];
 
 
 if simConfig.enableRW
@@ -34,7 +36,32 @@ else
     rwData.maxMomentum = 0;
     rwData.maxVelocity = 0;
 end
-    
+
+if simConfig.enableMTQ
+    if not( sat.mtq.exists )
+        error("Satellite not configured with Magnetorquer")
+    end
+    mtqData.maxDipoleMoment = sat.mtq.maxDipoleMoment;
+else
+    mtqData.maxDipoleMoment = 0;
+end
+
+if simConfig.enablePropulsion
+    if not( sat.propulsion.exists )
+        error("Satellite not configured with Propulsion system")
+    end
+    propulsionData.minThrust = sat.propulsion.minThrust;
+    propulsionData.maxThrust = sat.propulsion.maxThrust;
+    propulsionData.xArm = sat.propulsion.xArm;
+    propulsionData.yArm = sat.propulsion.yArm;
+    propulsionData.zArm = sat.propulsion.zArm;
+else
+    propulsionData.minThrust = 0;
+    propulsionData.maxThrust = 0;
+    propulsionData.xArm = 0;
+    propulsionData.yArm = 0;
+    propulsionData.zArm = 0;
+end
 
 satData.M_mat = sat.constr.M_mat;
 satData.mass = sat.constr.mass;
@@ -48,16 +75,8 @@ missionData.mu = MU_EARTH;
 missionData.Re = R_EARTH;
 missionData.J2 = J2_EARTH;
 
-
-if simConfig.enablePointing
-    missionData.pointingTarget_LLA = simConfig.targetLLA; 
-    missionData.pointingTarget_ECEF = LLAToECEF( missionData.pointingTarget_LLA );
-else
-    missionData.pointingTarget_LLA = [0,0,0];
-    missionData.pointingTarget_ECEF = [0;0;0];
-end
-
-eph = Ephemeris( Y0, stepTimes, missionData, satData, rwData, simConfig );
+eph = Ephemeris( Y0, stepTimes, missionData, satData, rwData, mtqData, ...
+    propulsionData, simConfig );
 
 end
 

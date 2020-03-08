@@ -1,15 +1,13 @@
 function [ dY ] = SatelliteAcceleration( t, Y, mjd0, mu, Re, J2, ...
-    enableJ2, enableDrag, enableSRP, enablePointing, ...
-    pointingTarget_ECEF, sat_mass, sat_I_mat, enableRW, ...
+    enableJ2, enableDrag, enableSRP, enableGravityGradient, ...
+    enablePointing, pointingTarget_ECEF, sat_mass, sat_I_mat, enableRW, ...
     rw_A_mat, rw_A_MPinv_mat, rw_I_mat, rw_maxTorque, ...
-    rw_maxMomentum, sat_surfaceCenterVectorsAndAreas, ...
+    rw_maxMomentum, controller_rw_Kp, controller_rw_Kd, ...
+    enableMTQ, mtq_maxDipoleMoment, controller_mtq_Kp, ...
+    controller_mtq_Kd, sat_surfaceCenterVectorsAndAreas, ...
     sat_coeffR, sat_coeffDrag )
 
 global OMEGA_EARTH
-
-refEulerAngleZ = 0;
-refEulerAngleY = 0;
-refEulerAngleX = 0;
 
 mjd = mjd0 + t/86400;
 
@@ -43,13 +41,15 @@ if enablePointing
     rotMatRef_ECI = getReferenceFrame( targetVec_ECI, v_ECI );
     qRef_ECI = RotMatToQuaternion( rotMatRef_ECI );
 else
-    rotMatRef_ECI =  EulerToRotMat( refEulerAngleZ, refEulerAngleY, refEulerAngleX );
-    qRef_ECI = RotMatToQuaternion( rotMatRef_ECI );
+    qRef_ECI = Y(18:21);
 end
 
 % Error variables describe rotation from qurrent attitude to reference
 % attitude.
 qError_ECI = QuaternionError(qRef_ECI, q_ECI);
+
+omegaRef_Body = zeros(3,1);
+omegaError_Body = w_sat_body - omegaRef_Body;
 
 unitQuatTol = 1e-6;
 if abs(norm(qRef_ECI)-1) > unitQuatTol
@@ -71,30 +71,38 @@ if enableJ2
     a_tot = a_tot + a_j2;
 end
 
-t_grav = Gravity_Torque( r_Body, mu, sat_I_mat );
-disturbance_torques = disturbance_torques + t_grav;
+if enableGravityGradient
+    t_grav = Gravity_Torque( r_Body, mu, sat_I_mat );
+    disturbance_torques = disturbance_torques + t_grav;
+end
 
-b_earth_ECI = MagneticField( mjd, latitude, longitude, altitude );
-b_earth_body = rotMat_ECIToBody * b_earth_ECI;
+if enableMTQ
+    b_earth_ECI = MagneticField( mjd, latitude, longitude, altitude );
+    b_earth_body = rotMat_ECIToBody * b_earth_ECI;
 
-t_MT = zeros(3,1); % Placeholder for Magnetorquer
+    m_mtq_body = MTQ_PD( qError_ECI, omegaError_Body, b_earth_body, sat_I_mat, ...
+        controller_mtq_Kp, controller_mtq_Kd, mtq_maxDipoleMoment, ...
+        w_sat_body, rw_A_mat, rw_h );
+    
+    %m_mtq_body = MTQ_BDOT( b_earth_body, t, mtq_maxDipoleMoment );
+    
+    t_mtq_body = Magnetorquer_Torque( m_mtq_body, b_earth_body );
+    
+    control_torques = control_torques + t_mtq_body;
 
-controller_rw_natFreq = 0.01; % Hz
-controller_rw_dampRatio = 3;
+else
+    t_MTQ = zeros(3,1);
+end
 
-omegaError_Body = zeros(3,1); % Placeholder for desired slew rate
 
 if enableRW
     rw_commandedTorque = RW_NonlinPD( qError_ECI, omegaError_Body, ...
         sat_I_mat, w_sat_body, rw_h, rw_A_mat, rw_A_MPinv_mat, ...
-        rw_maxTorque, rw_maxMomentum, t_MT, ...
-        controller_rw_natFreq, controller_rw_dampRatio );
+        rw_maxTorque, rw_maxMomentum, t_MTQ, ...
+        controller_rw_Kp, controller_rw_Kd );
     
      [rw_hdot, t_rw] = RW_Torque( w_sat_body, rw_commandedTorque, rw_h, ...
          rw_A_mat, rw_A_MPinv_mat );
-
-    %rw_hdot = rw_commandedTorque;
-    %t_rw = rw_A_mat*rw_commandedTorque;
     
     control_torques = control_torques + t_rw;
     
@@ -135,14 +143,14 @@ rdot = v_ECI;
 vdot = a_tot;
 qdot =  T_q(q_ECI)*w_sat_body;
 
-dY = [ rdot; vdot; qdot; wdot_sat; rw_hdot ];
+dY = [ rdot; vdot; qdot; wdot_sat; rw_hdot; zeros(4,1) ];
 
 if any(isnan(dY), 'all')
-    error("NaN found in satellite acceleration vector")
+    warning("NaN found in satellite acceleration vector")
 end
 
 if any(norm(wdot_sat) > 1000, 'all')
-    error("Too high satellite rotational velocity")
+    warning("Too high satellite rotational velocity")
 end
 
 end
