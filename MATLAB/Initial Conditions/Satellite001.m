@@ -45,7 +45,7 @@ sat.constr.surfaceCenterVectorsAndAreas = [ ...
 %% Satellite initial condition
 
 % Initial orientation quaternion and angular velocity
-sat.initCond.q_ECI = EulerToQuaternion(pi/4,pi/4, pi/4); % (0,0,0); %
+sat.initCond.q_ECI = EulerToQuaternion(pi/2.1,pi/2.1,pi/2.1); % (0,0,0); %
 sat.initCond.w_body = [0; 0; 0];
 % Initial orbit parameters
 sat.initCond.orb_T = 0;

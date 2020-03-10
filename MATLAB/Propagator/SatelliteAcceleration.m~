@@ -11,8 +11,6 @@ global OMEGA_EARTH
 
 global mtq_m
 global mtq_t
-global mtq_b
-global mtq_t_cmd
 
 mjd = mjd0 + t/86400;
 
@@ -38,8 +36,9 @@ rotMat_BodyToECI = rotMat_ECIToBody';
 
 NED_zAxis = - r_ECI./norm(r_ECI);
 NED_yAxis = cross(NED_zAxis,[0;0;1]);
-NED_xAxis = cross(NED_yAxis, NED_zAxis);
-rotMat_NEDToECI = [ NED_xAxis, NED_yAxis, NED_zAxis ];
+NED_yAxis = NED_yAxis./norm(NED_yAxis);
+NED_xAxis = cross(NED_yAxis, NED_z
+rotMat_NEDToECI = [ , , NED_zAxis ];
 
 r_Body = rotMat_ECIToBody * r_ECI;
 
@@ -88,26 +87,22 @@ end
 
 if enableMTQ
     b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
-    b_earth_ECI = rotMat_NEDToECI*b_earth_NED;
+    b_earth_ECI = b_earth_NED;
     b_earth_body = rotMat_ECIToBody * b_earth_ECI;
-    
-    mtq_b = [mtq_b; [b_earth_body;t]'];
 
-    [m_mtq_body, t_pdref_sat_mtq] = MTQ_PD( qError_ECI, ...
-        omegaError_Body, b_earth_body, sat_I_mat, ...
+    m_mtq_body = MTQ_PD( qError_ECI, omegaError_Body, b_earth_body, sat_I_mat, ...
         controller_mtq_Kp, controller_mtq_Kd, mtq_maxDipoleMoment, ...
         w_sat_body, rw_A_mat, rw_h );
     
-    mtq_m = [mtq_m; [m_mtq_body;t]'];
-    mtq_t_cmd = [mtq_t_cmd; [t_pdref_sat_mtq;t]'];
+    mtq_m = [mtq_m; m_mtq_body'];
     
     %m_mtq_body = MTQ_BDOT( b_earth_body, t, mtq_maxDipoleMoment );
     
     t_mtq_body = Magnetorquer_Torque( m_mtq_body, b_earth_body );
     
-    mtq_t = [mtq_t; [t_mtq_body;t]'];
+    mtq_t = [mtq_t; t_mtq_body'];
     
-    control_torques = control_torques + t_mtq_body; %t_pdref_sat_mtq; %
+    control_torques = control_torques + t_mtq_body;
 
 else
     t_MTQ = zeros(3,1);

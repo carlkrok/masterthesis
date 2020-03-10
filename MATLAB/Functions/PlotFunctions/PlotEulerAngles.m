@@ -18,15 +18,18 @@ hold on
 grid on
 x = 0:numSteps-1;
 tiledlayout(3,1)
-nexttile
+ax1 = nexttile;
 plot(x, xAxisRot.*(180/pi))
 title('Euler angle X-Axis orientation')
-nexttile
+ax2 = nexttile;
 plot(x, yAxisRot.*(180/pi))
 title('Euler angle Y-Axis orientation')
-nexttile
+ax3 = nexttile;
 plot(x, zAxisRot.*(180/pi))
 title('Euler angle Z-Axis orientation')
+grid(ax1,'on')
+grid(ax2,'on')
+grid(ax3,'on')
 hold off
 
 end

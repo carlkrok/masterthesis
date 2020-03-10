@@ -6,18 +6,21 @@ figure
 hold on
 x = 0:numSteps-1;
 tiledlayout(3,1)
-nexttile
+ax1 = nexttile;
 grid on
 plot(x, omega(:,1).*(180/pi))
 title('\omega_{sat}^{body} X-Axis')
-nexttile
+ax2 = nexttile;
 grid on
 plot(x, omega(:,2).*(180/pi))
 title('\omega_{sat}^{body} Y-Axis')
-nexttile
+ax3 = nexttile;
 grid on
 plot(x, omega(:,3).*(180/pi))
 title('\omega_{sat}^{body} Z-Axis')
+grid(ax1,'on')
+grid(ax2,'on')
+grid(ax3,'on')
 hold off
 
 end
