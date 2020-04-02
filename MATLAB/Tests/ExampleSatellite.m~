@@ -5,15 +5,21 @@ satelliteFilename = "Satellite001";
 run earthParameters;
 run(satelliteFilename);
 
-global mtq_m
-mtq_m = zeros(3,1)';
+global plotData
+plotData.mtq_b = zeros(4,1)';
+plotData.mtq_t_cmd = zeros(4,1)';
+plotData.mtq_m = zeros(4,1)';
+plotData.mtq_t = zeros(4,1)';
+plotData.qStruct_ECI = [1;0;0;0];
 
-t0_UTC = [2016 10 31 12 56 37.67];
+global simConfig
+
+t0_UTC = [2005 10 31 12 56 37.67];
 t0_MJD = mjuliandate(t0_UTC);
 
 sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 stepLength = 1; % [s]
-numSteps = floor( (20* sat_period) / stepLength );
+numSteps = floor((20 * sat_period) / stepLength );
 stepTimes = zeros( 1, numSteps+1 );
 for stepIter = 0 : numSteps
    stepTimes( stepIter+1 ) = (stepIter * stepLength);
@@ -26,15 +32,17 @@ simConfig.enableGravityGradient = false;
 
 %simConfig.enableRW = true;
 simConfig.enableRW = false;
-simConfig.rw_controller.Kp = 0.18; % Hz
-simConfig.rw_controller.Kd = 0.6;
+simConfig.rw_controller.Kp = 0.3; % Hz
+simConfig.rw_controller.Kd = 1.5;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
-simConfig.mtq_controller.Kp = 1; 
-simConfig.mtq_controller.Kd = 0;%.0001;
+simConfig.mtq_controller.Kp = 1e-6; 
+simConfig.mtq_controller.Kd = 0.9;
+simConfig.mtq_controller.Ki = 0;
 
-simConfig.enablePropulsion = false;
+simConfig.enablePropulsion = true;
+% simConfig.enablePropulsion = false;
 simConfig.propulsion_controller.Kp = 0.1; % Hz
 simConfig.propulsion_controller.Kd = 0.01;
 
@@ -43,8 +51,7 @@ simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 
-eph = SimulateSatellite( satelliteFilename, t0_MJD, stepTimes, ...
-    simConfig );
+eph = SimulateSatellite( satelliteFilename, t0_MJD, stepTimes );
 
 
 %%
@@ -58,18 +65,16 @@ PlotOrbit( xyz, includeEarth );
 %%
 
 
-isCircular = true;
-xyz = eph(:,2:4);
-t = eph(:,1);
-PlotOrbitRadiusDeviation( t, xyz, isCircular );
+% isCircular = true;
+% xyz = eph(:,2:4);
+% t = eph(:,1);
+% PlotOrbitRadiusDeviation( t, xyz, isCircular );
 
    
 %%
 
 quaternions = eph(:,8:11);
 PlotEulerAngles( quaternions );
-
-
 
 
 qRef = [1; 0; 0; 0];
@@ -83,10 +88,10 @@ PlotQuaternionError( qRef, quaternions)
 
 %%
 
-
+if simConfig.enableRW
 rw_momentum = eph(:,15:18);
 PlotRWMomentum( rw_momentum )
-
+end
 
 %%
 
@@ -105,37 +110,24 @@ PlotRotRate( omega )
 % for ephIter = 1:length(eph(:,1))
 %     %clf reset
 %     plotOrientation(op,qArray(ephIter,:));
-%     pause(.01)
+%     pause(.001)
 % end
 
 %%
 
-
+%startNum = 500;
 if simConfig.enableMTQ
-
-    numSteps = length(mtq_m(:,1));
-
-    figure
-    hold on
-    x = 0:numSteps-1;
-    tiledlayout(3,1)
-    nexttile
-    grid on
-    plot(x, mtq_m(:,1))
-    title('M^{b} X-Axis')
-    nexttile
-    grid on
-    plot(x, mtq_m(:,2))
-    title('M^{b} Y-Axis')
-    nexttile
-    grid on
-    plot(x, mtq_m(:,3))
-    title('M^{b} Z-Axis')
-    hold off
+    PlotMTQDipole( plotData.mtq_m )
+    PlotMTQDipole( plotData.mtq_b )
+    %PlotMTQTorque( plotData.mtq_t )
+    PlotTwoTorques( plotData.mtq_t, plotData.mtq_t_cmd )
+    %Plot3DMTQTorquePD( plotData.mtq_t(startNum:end,:), plotData.mtq_t_cmd(startNum:end,:).*1e-1,...
+    %    plotData.mtq_m(startNum:end,:).*1e-6, plotData.mtq_b(startNum:end,:).*1e-2 )
 end
 
+%%
 
-
-
-
-
+if simConfig.enablePropulsion
+prop_rho = eph(:,25:30);
+PlotPropRho( prop_rho )
+end

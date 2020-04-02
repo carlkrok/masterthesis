@@ -1,4 +1,6 @@
-function [ F_drag_body, T_drag_body ] = AtmosDrag_ForceTorque( vRel_body, coeffDrag, surfaceCenterVectorsAndAreas )
+function [ F_drag_body, T_drag_body ] = AtmosDrag_ForceTorque( vRel_body, ...
+    coeffDrag, com_struct, RotMat_structToBody, ...
+    surfaceCenterVectorsNormalVectorsAreas )
 
 vRel_unitVec = vRel_body / norm(vRel_body);
 
@@ -8,11 +10,11 @@ F_drag_body = zeros(3,1);
 
 T_drag_body = zeros(3,1);
 
-for surface = surfaceCenterVectorsAndAreas
+for surface = surfaceCenterVectorsNormalVectorsAreas
     
-    surfaceCenter = surface(1:3);
-    surfaceNormal = surfaceCenter/norm(surfaceCenter);
-    surfaceArea = surface(4);
+    surfaceCenter = RotMat_structToBody*(surface(1:3)-com_struct);
+    surfaceNormal = RotMat_structToBody*surface(4:6);
+    surfaceArea = surface(7);
     
     dotProd = dot( surfaceNormal, vRel_unitVec);
     

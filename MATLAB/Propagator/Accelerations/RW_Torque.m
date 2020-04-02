@@ -1,7 +1,9 @@
-function [hdot, t_body] = RW_Torque( w_sat, appliedTorque, h_rw, A_mat, A_MPinv_mat )
+function [wdot, t_body] = RW_Torque( wdot_sat_body, appliedTorque, ...
+    rw_I_mat, w_rw_w, A_mat, A_MPinv_mat, RotMat_structToBody )
 
-hdot = appliedTorque;
+wdot = rw_I_mat \ appliedTorque ...
+    - A_MPinv_mat * RotMat_structToBody' * wdot_sat_body ...
+    + A_MPinv_mat * RotMat_structToBody' * wdot_body_body;
 
-t_body = -A_mat * appliedTorque - ( cross( w_sat, A_mat * h_rw ) );
 
 end
