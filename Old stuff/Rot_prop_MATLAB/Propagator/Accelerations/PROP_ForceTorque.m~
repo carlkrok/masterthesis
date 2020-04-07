@@ -1,0 +1,24 @@
+function [f_prop_body, t_prop_body, rho_dot, mass_dot ] = PROP_ForceTorque( ...
+    com_struct, RotMat_structToBody, thrusters, f_prop_cmd )
+
+    f_prop_body = zeros(3,1);
+    t_prop_body = zeros(3,1);
+    
+    rho_dot = zeros(length(f_prop_cmd),1);
+    mass_dot = zeros(length(f_prop_cmd),1);
+    
+    for propIter = 1:length(f_prop_cmd)
+        
+        thisForce_body = RotMat_structToBody ...
+            * thrusters(propIter).structureThrustDir ...
+            * f_prop_cmd(propIter);
+        
+        f_prop_body(propIter) = thisForce_body;
+        
+        t_prop_body(propIter) = cross( RotMat_structToBody ...
+            * ( thrusters(propIter).structArm - com_struct ), thisForce_body );
+        
+    end
+
+end
+
