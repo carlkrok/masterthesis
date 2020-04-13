@@ -33,26 +33,20 @@ simConfig.enableGravityGradient = false;
 
 %simConfig.enableRW = true;
 simConfig.enableRW = false;
-simConfig.rw_controller.Kp = 0.1; % Hz
-simConfig.rw_controller.Kd = 2;
 
 %simConfig.enableMTQ = true;
 simConfig.enableMTQ = false;
-simConfig.mtq_controller.Kp = 1e-1; 
-simConfig.mtq_controller.Kd = 1e-1;
-simConfig.mtq_controller.Ki = 0;
 
 simConfig.enablePropulsion = true;
 %simConfig.enablePropulsion = false;
-simConfig.propulsion_controller.Kp = 0.1; % Hz
-simConfig.propulsion_controller.Kd = 2;
 
 simConfig.enablePointing = false;
-simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
-simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
+%simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
+%simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 
-eph = SimulateSatellite( satelliteFilename, t0_MJD, stepTimes );
+%eph = SimulateSatellite_fullModel( satelliteFilename, t0_MJD, stepTimes );
+eph = SimulateSatellite_simpleModel( satelliteFilename, t0_MJD, stepTimes );
 
 
 %%
@@ -77,9 +71,7 @@ PlotOrbit( xyz, includeEarth );
 quaternions = eph(:,8:11);
 PlotEulerAngles( quaternions );
 
-
-qRef = [1; 0; 0; 0];
-PlotQuaternionError( qRef, quaternions)
+PlotQuaternionError( simConfig.referenceQuaternion, quaternions)
 
 
 %%
@@ -90,8 +82,8 @@ PlotQuaternionError( qRef, quaternions)
 %%
 
 if simConfig.enableRW
-rw_momentum = eph(:,15:18);
-PlotRWMomentum( rw_momentum )
+rw_w = eph(:,15:18);
+PlotRWMomentum( rw_w )
 end
 
 %%
@@ -114,19 +106,6 @@ PlotRotRate( omega )
 %     pause(1e-3)
 % end
 
-%%
-
-startNum = 500;
-if simConfig.enableMTQ
-    PlotMTQDipole( plotData.mtq_m )
-    %PlotMTQDipole( plotData.mtq_b )
-    %PlotMTQTorque( plotData.mtq_t )
-    %PlotTwoTorques( plotData.mtq_t, plotData.mtq_t_cmd )
-    PlotThreeTorques( plotData.mtq_t_cmd, plotData.mtq_t_can, plotData.mtq_t )
-    %PlotTwoTorques( plotData.mtq_t, plotData.mtq_t_can )
-    %Plot3DMTQTorquePD( plotData.mtq_t(startNum:end,:), plotData.mtq_t_cmd(startNum:end,:).*1e-1,...
-    %    plotData.mtq_m(startNum:end,:).*1e-6, plotData.mtq_b(startNum:end,:).*1e-2 )
-end
 
 %%
 
