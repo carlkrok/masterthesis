@@ -33,6 +33,7 @@ Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.w; ...
     sat.constr.body_init_com_struct];
 
 U0 = zeros(13,1);
+%U0 = zeros(10,1);
 
 if not( sat.rw.exists )
     error("Satellite not configured with Reaction Wheels")
@@ -79,12 +80,12 @@ missionData.J2 = J2_EARTH;
 nStates = 23;
 nOutput = nStates;
 nInputs = 13;
-timeStep = 0.1;
+timeStep = 1;
 
 SatNLMPC = nlmpc(nStates, nOutput, nInputs);
 SatNLMPC.Ts = timeStep;
-SatNLMPC.PredictionHorizon = 20;
-SatNLMPC.ControlHorizon = 5;
+SatNLMPC.PredictionHorizon = 2;
+SatNLMPC.ControlHorizon = 2;
 
 SatNLMPC.Model.IsContinuousTime = true;
 SatNLMPC.Model.NumberOfParameters = 4;
@@ -96,7 +97,7 @@ SatNLMPC.Optimization.CustomCostFcn = @(Y,U,e,data,I_mat_body, ...
     com_struct, tot_mass, b_earth_eci) SatCostFnc_simple(...
     Y,U,e,data,I_mat_body, com_struct, tot_mass, b_earth_eci);
 SatNLMPC.Optimization.ReplaceStandardCost = true;
-SatNLMPC.Optimization.UseSuboptimalSolution = true;
+SatNLMPC.Optimization.UseSuboptimalSolution = false;
 
 SatNLMPC.Optimization.SolverOptions.Algorithm = 'sqp';
 SatNLMPC.Optimization.SolverOptions.SpecifyObjectiveGradient = true;
@@ -165,7 +166,7 @@ SatNLMPC_options = nlmpcmoveopt;
 
 unitQuatTol = 1e-6;
 
-Duration = 3;
+Duration = 50;
 eph = [0, Y0'];
 Y = Y0';
 U = U0;

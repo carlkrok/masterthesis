@@ -20,7 +20,7 @@ t0_MJD = mjuliandate(t0_UTC);
 
 sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 stepLength = 1; % [s]
-numSteps = floor((0.3 * sat_period) / stepLength );
+numSteps = floor((0.1 * sat_period) / stepLength );
 stepTimes = zeros( 1, numSteps+1 );
 for stepIter = 0 : numSteps
    stepTimes( stepIter+1 ) = (stepIter * stepLength);

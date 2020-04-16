@@ -21,7 +21,7 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 % Based on water propulsion from https://steamjet.space
 
 sat.propulsion.exists = true;
-propRho0 = 1000;
+propRho0 = 100;
 std_isp = 350 * 10000;
 
 
@@ -200,7 +200,7 @@ sat.initCond.orb_h = MomentumNorm( MU_EARTH, sat.initCond.orb_a, sat.initCond.or
 
 sat.mtq.exists = true;
 
-sat.mtq.maxDipoleMoment = 1e4; %2*0.42;
+sat.mtq.maxDipoleMoment = 0.42;
 
 sat.mtq.resistance = 5^2 / 0.86; % Voltage squared over power
 

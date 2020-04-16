@@ -1,23 +1,22 @@
-function J = SatCostFnc_simple(Y,U,e,data,I_mat_body, com_struct, tot_mass, ...
-    b_earth_eci)
+function J = SatCostFnc(Y,U,e,data, t, mjd)
 
-%global simConfig
+global simConfig
 
-%qRef_ECI = simConfig.referenceQuaternion;
+qRef_ECI = simConfig.referenceQuaternion;
 
 J = 0;
 
-Orient_cost = 1e6;
+Orient_cost = 1e3;
 
-MTQ_cost = 0.01;
-RW_cost = 0.1;
-PROP_cost = 10000;
+MTQ_cost = 1;
+RW_cost = 1;
+PROP_cost = 1;
 
 for ephIter = 1:length(Y(:,1))
     
-    %qError_ECI = QuaternionError(qRef_ECI, Y(ephIter,7:10));
+    qError_ECI = QuaternionError(qRef_ECI, Y(ephIter,7:10));
     
-    J = J + Orient_cost * ( norm( Y(ephIter,8:10) ) ); ...qError_ECI(2:4)' * qError_ECI(2:4);
+    J = J + Orient_cost * qError_ECI(2:4)' * qError_ECI(2:4);
     
 end
 

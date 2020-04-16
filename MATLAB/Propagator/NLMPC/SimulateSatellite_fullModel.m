@@ -32,7 +32,7 @@ Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.w; ...
     sat.propulsion.thrusters(6).rho; ...
     sat.constr.body_init_com_struct];
 
-U0 = zeros(13,1);
+U0 = zeros(10,1);
 
 if not( sat.rw.exists )
     error("Satellite not configured with Reaction Wheels")
@@ -78,13 +78,13 @@ missionData.J2 = J2_EARTH;
 
 nStates = 32;
 nOutput = nStates;
-nInputs = 13;
+nInputs = 10;
 timeStep = 1;
 
 SatNLMPC = nlmpc(nStates, nOutput, nInputs);
 SatNLMPC.Ts = timeStep;
-SatNLMPC.PredictionHorizon = 8;
-SatNLMPC.ControlHorizon = 2;
+SatNLMPC.PredictionHorizon = 1;
+SatNLMPC.ControlHorizon = 1;
 
 SatNLMPC.Model.IsContinuousTime = true;
 SatNLMPC.Model.NumberOfParameters = 2;
@@ -92,22 +92,22 @@ SatNLMPC.Model.StateFcn = @(Y, U, Ts, mjd) SatelliteAcceleration(Y, U, Ts, mjd);
 
 SatNLMPC.Optimization.CustomCostFcn = @(Y,U,e,data,Ts, mjd) SatCostFnc(Y,U,e,data,Ts, mjd);
 SatNLMPC.Optimization.ReplaceStandardCost = true;
-SatNLMPC.Optimization.UseSuboptimalSolution = true;
+SatNLMPC.Optimization.UseSuboptimalSolution = false;
 
 SatNLMPC.Optimization.SolverOptions.Algorithm = 'sqp';
 %SatNLMPC.Optimization.SolverOptions.SpecifyObjectiveGradient = true;
 %SatNLMPC.Optimization.SolverOptions.SpecifyConstraintGradient = true;
 SatNLMPC.Optimization.SolverOptions.Display = 'final-detailed'; % 'iter-detailed'; %
-SatNLMPC.Optimization.SolverOptions.MaxIter = 5;
-SatNLMPC.Optimization.SolverOptions.OptimalityTolerance = 1.00e-05;
-SatNLMPC.Optimization.SolverOptions.ConstraintTolerance = 1.00e-05;
+SatNLMPC.Optimization.SolverOptions.MaxIter = 100;
+SatNLMPC.Optimization.SolverOptions.OptimalityTolerance = 1.00e-06;
+SatNLMPC.Optimization.SolverOptions.ConstraintTolerance = 1.00e-06;
 
-for mtqVal = 1:3
-    SatNLMPC.MV(mtqVal).Min = -satData.mtq.maxDipoleMoment;
-    SatNLMPC.MV(mtqVal).Max = satData.mtq.maxDipoleMoment;
-end
+% for mtqVal = 1:3
+%     SatNLMPC.MV(mtqVal).Min = -satData.mtq.maxDipoleMoment;
+%     SatNLMPC.MV(mtqVal).Max = satData.mtq.maxDipoleMoment;
+% end
 
-for rwVal = 4:7
+for rwVal = 1:4
     SatNLMPC.MV(rwVal).Min = -rwData.maxAcc;
     SatNLMPC.MV(rwVal).Max = rwData.maxAcc;
 end
@@ -117,7 +117,7 @@ for rwVal = 14:17
     SatNLMPC.States(rwVal).Max = rwData.maxVel;
 end
 
-for propVal = 8:13
+for propVal = 5:10
     SatNLMPC.MV(propVal).Min = 0; %satData.propulsion.minThrust;
     SatNLMPC.MV(propVal).Max = satData.propulsion.maxThrust;
 end
@@ -135,7 +135,7 @@ SatNLMPC_options = nlmpcmoveopt;
 
 unitQuatTol = 1e-6;
 
-Duration = 200;
+Duration = 20;
 eph = [0, Y0'];
 Y = Y0;
 U = U0;
