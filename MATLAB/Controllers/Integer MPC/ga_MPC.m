@@ -4,11 +4,11 @@ function U = ga_MPC(Y0, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
 
 X_ref = repmat([zeros(7,1);qRef(2:4);zeros(19,1)],prediction_horizon,1);
 
-attitude_weight = 1e3;
-rw_actuation_weight = 0;
-mtq_weight = 0;
-thrust_weight = 0;
-rw_momentum_weight = 0;
+attitude_weight = 1e8;
+rw_actuation_weight = 2;
+mtq_weight = 100;
+thrust_weight = 3e9;
+rw_momentum_weight = 1e-2;
 
 
 u_integrated_cell = {prediction_horizon.*eye(13)};
@@ -69,7 +69,7 @@ A_u = A_y * B_chi;
 
 b_u = b_y - A_y * chi_0;
 
-options = optimoptions('ga', 'Display', 'off','PlotFcn', @gaplotbestf);
+options = optimoptions('ga', 'Display', 'off', 'MaxTime', 30);%,'PlotFcn', @gaplotbestf);
 
 x = ga(@( U ) ga_CostFn( U, B_chi, chi_0, H, W, U_int_index ),13*prediction_horizon,[],[], ...
     [],[],repmat(U_lb,prediction_horizon,1), ...

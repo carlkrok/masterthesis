@@ -148,12 +148,28 @@ for currStep = 1:(duration/timestep)
     b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
     b_earth_eci = rotMat_NEDToECI*b_earth_NED;
     b_earth_body = rotMat_ECIToBody * b_earth_eci;
+   
+    if simConfig.enableRW
+        B_RW = LinearizedRW( I_mat_sys, rwData.I_mat, rwData.A_mat );
+    else
+        B_RW = zeros(3,4);
+    end
+
+    if simConfig.enableMTQ
+        B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_body );
+    else
+        B_MTQ = zeros(3,3);
+    end
+
+    if simConfig.enablePropulsion
+        B_PROP = LinearizedPROP( I_mat_sys, com_struct, satData.propulsion.thrusters );
+    else
+        B_PROP = zeros(3,6);
+    end
     
     A_cont = LinearizedStateMat( r_ECI, MU_EARTH, q_ECI );
     B_cont = [zeros(10,13); ...
-    LinearizedMTQ( I_mat_sys, b_earth_body ), ...
-    LinearizedRW( I_mat_sys, rwData.I_mat, rwData.A_mat ), ...
-    LinearizedPROP( I_mat_sys, com_struct, satData.propulsion.thrusters ); ...
+    B_MTQ, B_RW, B_PROP; ...
     zeros(4,3), eye(4,4), zeros(4,6); ...
     zeros(6,7), LinearizedRHO(satData.propulsion.thrusters)
     zeros(6,7), eye(6,6)];
@@ -163,7 +179,7 @@ for currStep = 1:(duration/timestep)
 
     
     
-    Y_simple = [Y(1:17),Y(18:23),Y_simple(24:29)']';
+    Y_simple = [Y(1:17),Y(24:29),Y_simple(24:29)']';
     
     
     U = customMPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...

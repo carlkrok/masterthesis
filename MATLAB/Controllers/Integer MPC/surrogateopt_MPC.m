@@ -3,10 +3,10 @@ function U = surrogateopt_MPC(Y0, A_disc,B_disc,prediction_horizon, U_lb, U_ub, 
 
 global plotData
 
-attitude_weight = 1e5;
-rw_actuation_weight = 10;
-mtq_weight = 10;
-thrust_weight = 1e-10;
+attitude_weight = 100;
+rw_actuation_weight = 1;
+mtq_weight = 1;
+thrust_weight = 10;
 rw_momentum_weight = 0.1;
 
 X_ref = repmat([zeros(7,1);qRef(2:4);zeros(19,1)],prediction_horizon,1);
@@ -67,10 +67,10 @@ U_integratedMat = blkdiag(u_integrated_cell{:});
 W = W_weight * U_integratedMat;
   
 options = optimoptions(@surrogateopt, 'Display', 'off', ...
-    'MaxFunctionEvaluations', 200, 'UseParallel', false, ...
+    'MaxFunctionEvaluations', 250, 'UseParallel', false, ...
     'MinSampleDistance', 1e-3);
 [sol, fval] = surrogateopt(@(U) MPC_costfn( U, Y_lb_tot, Y_ub_tot, ...
-    Y_lb_dotVec_tot, Y_ub_dotVec_tot, B_chi, chi_0, H, W ), ...
+    Y_lb_dotVec_tot, Y_ub_dotVec_tot, B_chi, chi_0, H, W, U_int_index ), ...
     U_lb_tot, U_ub_tot, U_int_index, options);
 
 U = sol(1:13)';

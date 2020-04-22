@@ -54,13 +54,13 @@ simConfig.referenceQuaternion = [1; 0; 0; 0];
 %eph = SimulateSatellite_linearizedMatlab( satelliteFilename, t0_MJD, stepTimes );
 % eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
 
-timestep = 0.75;
-prediction_horizon = 3;
-duration = 60; %numSteps*stepLength;
+timestep = 0.5;
+prediction_horizon = 5;
+duration = 50; %numSteps*stepLength;
 % eph = SimulateSatellite_customMPC( satelliteFilename, t0_MJD, ...
 %     timestep, duration, prediction_horizon );
-eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
-    timestep, duration, prediction_horizon );
+% eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
+%     timestep, duration, prediction_horizon );
 
 
 %%

@@ -1,4 +1,4 @@
-function [ eph ] = SimulateSatellite_integerMPC( satelliteFilename, mjd0, ...
+function [ eph ] = SimulateSatellite_customMPC( satelliteFilename, mjd0, ...
     timestep, duration, prediction_horizon )
 
 global MU_EARTH
@@ -95,12 +95,12 @@ Y = Y0';
 Y_simple = [Y(1:17),Y(18:23),zeros(1,6)]';
 U = U0;
 
-U_lb = [ -mtqData.maxDipoleMoment .* ones(3,1);...
+U_lb = [ -satData.mtq.maxDipoleMoment .* ones(3,1);...
         -rwData.maxAcc .* ones(4,1); ...
         zeros(6,1)];
-U_ub = [ mtqData.maxDipoleMoment .* ones(3,1); ...
+U_ub = [ satData.mtq.maxDipoleMoment .* ones(3,1); ...
     rwData.maxAcc .* ones(4,1); ...
-    ones(6,1)]; % propulsionData.maxThrust .* 
+    satData.propulsion.maxThrust .* ones(6,1)];
 
 Y_lb = [zeros(13,1); -rwData.maxVel .*ones(4,1); zeros(12,1)];
 Y_lb_dotVec = [zeros(13,1); ones(4,1); zeros(6,1); ones(6,1)];
@@ -148,24 +148,7 @@ for currStep = 1:(duration/timestep)
     b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
     b_earth_eci = rotMat_NEDToECI*b_earth_NED;
     b_earth_body = rotMat_ECIToBody * b_earth_eci;
-    
-    if simConfig.enableRW
-        B_RW = LinearizedRW( I_mat_sys, rwData.I_mat, rwData.A_mat );
-    else
-        B_RW = zeros(3,4);
-    end
-
-    if simConfig.enableMTQ
-        B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_body );
-    else
-        B_MTQ = zeros(3,3);
-    end
-
-    if simConfig.enablePropulsion
-        B_PROP = LinearizedPROP( I_mat_sys, com_struct, satData.propulsion.thrusters );
-    else
-        B_PROP = zeros(3,6);
-    end
+   
     
     A_cont = LinearizedStateMat( r_ECI, MU_EARTH, q_ECI );
     B_cont = [zeros(10,13); ...
@@ -179,31 +162,12 @@ for currStep = 1:(duration/timestep)
 
     
     
-    Y_simple = [Y(1:17),Y(24:29),Y_simple(24:29)']';
+    Y_simple = [Y(1:17),Y(18:23),Y_simple(24:29)']';
     
     
-%     U = integerMPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-%         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%         simConfig.referenceQuaternion);
-    
-%     U = MAP_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-%         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%         simConfig.referenceQuaternion);
-
-%     U = MPT_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-%         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%         simConfig.referenceQuaternion);
-
-%     U = surrogateopt_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-%         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%         simConfig.referenceQuaternion);
-
-    U = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-    Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-    simConfig.referenceQuaternion);
-
-    U(7:13) = propulsionData.maxThrust .* U(7:13);
-    
+    U = customMPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
+        Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
+        simConfig.referenceQuaternion);
     
     plotData.mtq_m = [plotData.mtq_m; U(1:3)'];
     plotData.prop_f = [plotData.prop_f; U(8:13)'];

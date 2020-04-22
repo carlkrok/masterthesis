@@ -1,15 +1,14 @@
 function U = ga_MPC(Y0, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
     Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, qRef)
 
-global plotData
 
 X_ref = repmat([zeros(7,1);qRef(2:4);zeros(19,1)],prediction_horizon,1);
 
-attitude_weight = 1e8;
+attitude_weight = 1e6;
 rw_actuation_weight = 1;
 mtq_weight = 1;
-thrust_weight = 1;
-rw_momentum_weight = 0.1;
+thrust_weight = 10;
+rw_momentum_weight = 1e-6;
 
 
 u_integrated_cell = {prediction_horizon.*eye(13)};
@@ -70,31 +69,15 @@ A_u = A_y * B_chi;
 
 b_u = b_y - A_y * chi_0;
 
-options = optimoptions('ga', 'Display', 'iter');
+options = optimoptions('ga', 'Display', 'off', 'MaxTime', 10);%,'PlotFcn', @gaplotbestf);
 
-x = ga(@( U ) ga_CostFn( U, B_chi, chi_0, H, W ),13*prediction_horizon,A_u,b_u, ...
-    [],[],U_lb,U_ub,[],U_int_index, options)
+x = ga(@( U ) ga_CostFn( U, B_chi, chi_0, H, W, U_int_index ),13*prediction_horizon,[],[], ...
+    [],[],repmat(U_lb,prediction_horizon,1), ...
+    repmat(U_ub,prediction_horizon,1),[],U_int_index, options);
 
 %%
 
-
-cost_attitude = attitude_weight * dot( ...
-    ( Y_opt .* Yref_dotVec_tot - Yref_vec_tot ).^2 ...
-    , ...
-    ones( size( Yref_vec_tot ) ) );
-cost_mtq = mtq_weight * dot(u_cont_integrated_mat*sol.u_cont.^2, u_mtq_dotVec);
-cost_rw_actuation = rw_actuation_weight * dot(u_cont_integrated_mat*sol.u_cont.^2, u_rw_dotVec);
-cost_thrust = thrust_weight * ones(1,6) * u_int_integrated_mat*sol.u_int;
-cost_actuation = cost_mtq + cost_rw_actuation + cost_thrust;
-cost_rw_momentum = rw_momentum_weight * dot( (sol.Y_opt .* Y_rw_momentum_dotVec_tot).^2, ...
-    ones( size( Yref_vec_tot ) ) );
-
-
-plotData.cost_attitude = [plotData.cost_attitude, cost_attitude];
-plotData.cost_actuation = [plotData.cost_actuation, cost_actuation];
-plotData.cost_rw_momentum = [plotData.cost_rw_momentum, cost_rw_momentum];
-
-U = x(1:13);
+U = x(1:13)';
 
 
 end
