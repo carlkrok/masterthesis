@@ -6,10 +6,12 @@ global mtqData
 global propulsionData
 global satData
 global missionData
-
+global plotData
 global OMEGA_EARTH
 
 %% Extrancting data from state vector
+
+sim_time = (mjd - missionData.mjd0) * 86400;
 
 r_ECI = Y(1:3);
 v_ECI = Y(4:6);
@@ -147,6 +149,7 @@ end
 if simConfig.enableGravityGradient
     t_grav = Gravity_Torque( r_Body, missionData.mu, I_mat_body );
     disturbance_torques = disturbance_torques + t_grav;
+    plotData.grav_torque_norm = [ plotData.grav_torque_norm; sim_time, norm(t_grav) ];
 end
 
 
@@ -159,6 +162,8 @@ if simConfig.enableDrag
     a_tot = a_tot + f_drag_ECI ./ tot_mass;
 
     disturbance_torques = disturbance_torques + t_drag_body;
+    plotData.drag_torque_norm = [ plotData.drag_torque_norm; sim_time, norm(t_drag_body) ];
+
 end
 
 if simConfig.enableSRP
@@ -173,6 +178,8 @@ if simConfig.enableSRP
         a_tot = a_tot + f_srp_ECI ./ tot_mass;
 
         disturbance_torques = disturbance_torques + t_srp_body;
+        plotData.srp_torque_norm = [ plotData.srp_torque_norm; sim_time, norm(t_srp_body) ];
+
     end
 end
     
@@ -204,6 +211,8 @@ dY = [ rdot; vdot; qdot; wdot_sat_body; wdot_rw_w; ...
     Ixy_dot_struct; Ixz_dot_struct; Iyz_dot_struct; ...
     PROP_rho_dot; com_dot_struct ];
 
+plotData.wdot_sat_body = [ plotData.wdot_sat_body; sim_time, wdot_sat_body' ];
+plotData.disturbance_torques_norm = [ plotData.disturbance_torques_norm; sim_time, norm(disturbance_torques) ];
 
 end
 

@@ -1,7 +1,7 @@
 function PlotQuaternionError( qRef, quaternions)
 
 qError = zeros(length(quaternions), 4);
-for quatIter = 1:length(quaternions)
+for quatIter = 1:length(quaternions(:,1))
     qError(quatIter,:) = QuaternionProduct( QuaternionInverse( qRef ), quaternions(quatIter,:)' );
 end
 

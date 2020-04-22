@@ -22,7 +22,7 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 
 sat.propulsion.exists = true;
 propRho0 = 100;
-std_isp = 350 * 10000;
+std_isp = 5000;
 
 
 sat.propulsion.minThrust = 15 * 10^-3; % N

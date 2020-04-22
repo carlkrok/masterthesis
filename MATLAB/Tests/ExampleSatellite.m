@@ -7,6 +7,18 @@ run(satelliteFilename);
 
 global simConfig
 
+global plotData
+plotData.mtq_m = zeros(1,3);
+plotData.prop_f = zeros(1,6);
+plotData.cost_attitude = 0;
+plotData.cost_actuation = 0;
+plotData.cost_rw_momentum = 0;
+plotData.disturbance_torques_norm = zeros(1,2);
+plotData.srp_torque_norm = zeros(1,2);
+plotData.drag_torque_norm = zeros(1,2);
+plotData.grav_torque_norm = zeros(1,2);
+plotData.wdot_sat_body = zeros(1,4);
+
 t0_UTC = [2005 10 31 12 56 37.67];
 t0_MJD = mjuliandate(t0_UTC);
 
@@ -37,14 +49,14 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 
-%eph = SimulateSatellite_fullModel( satelliteFilename, t0_MJD, stepTimes );
-%eph = SimulateSatellite_simpleModel( satelliteFilename, t0_MJD, stepTimes );
+%eph = SimulateSatellite_NLMPCfullModel( satelliteFilename, t0_MJD, stepTimes );
+%eph = SimulateSatellite_NLMPCsimpleModel( satelliteFilename, t0_MJD, stepTimes );
 %eph = SimulateSatellite_linearizedMatlab( satelliteFilename, t0_MJD, stepTimes );
-%eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
+% eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
 
 timestep = 1;
 prediction_horizon = 5;
-duration = 50; %numSteps*stepLength;
+duration = 30; %numSteps*stepLength;
 eph = SimulateSatellite_customMPC( satelliteFilename, t0_MJD, ...
     timestep, duration, prediction_horizon );
 % eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
@@ -136,3 +148,18 @@ PlotPropRho( prop_rho )
 com = eph(:,31:33);
 PlotCoM( com )
 end
+
+%%
+
+
+PlotPropForce( plotData.prop_f );
+
+PlotMTQDipole( plotData.mtq_m )
+
+PlotCosts(plotData.cost_attitude,plotData.cost_actuation,plotData.cost_rw_momentum);
+
+PlotDisturbanceTorqueNorm ( plotData.disturbance_torques_norm, ...
+    plotData.srp_torque_norm, plotData.drag_torque_norm, ...
+    plotData.grav_torque_norm);
+
+PlotOmegaDot( plotData.wdot_sat_body );

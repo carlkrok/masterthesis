@@ -9,14 +9,17 @@ tiledlayout(3,1)
 ax1 = nexttile;
 grid on
 plot(x, omega(:,1));%.*(180/pi))
+ylabel('rad/s')
 title('\omega_{sat}^{body} X-Axis')
 ax2 = nexttile;
 grid on
 plot(x, omega(:,2));%.*(180/pi))
+ylabel('rad/s')
 title('\omega_{sat}^{body} Y-Axis')
 ax3 = nexttile;
 grid on
 plot(x, omega(:,3));%.*(180/pi))
+ylabel('rad/s')
 title('\omega_{sat}^{body} Z-Axis')
 grid(ax1,'on')
 grid(ax2,'on')
