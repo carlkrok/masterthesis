@@ -1,5 +1,5 @@
 function [ F_srp_body, T_srp_body ] = SRP_ForceTorque( sunVec_body, ...
-    coeffR, com_struct, RotMat_structToBody, ...
+    coeffR, com_struct, ...
     surfaceCenterVectorsNormalVectorsAreas )
 
 global SRP_CONSTANT
@@ -14,8 +14,8 @@ sunVec_unit = sunVec_body / norm( sunVec_body );
 
 for surface = surfaceCenterVectorsNormalVectorsAreas
     
-    surfaceCenter = RotMat_structToBody*(surface(1:3)-com_struct);
-    surfaceNormal = RotMat_structToBody*surface(4:6);
+    surfaceCenter = (surface(1:3)-com_struct);
+    surfaceNormal = surface(4:6);
     surfaceArea = surface(7);
     
     dotProd = dot( surfaceNormal, sunVec_unit);

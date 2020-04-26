@@ -35,14 +35,14 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-simConfig.enablePropulsion = true;
-%simConfig.enablePropulsion = false;
+%simConfig.enablePropulsion = true;
+simConfig.enablePropulsion = false;
 
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
@@ -54,8 +54,8 @@ simConfig.referenceQuaternion = [1; 0; 0; 0];
 %eph = SimulateSatellite_linearizedMatlab( satelliteFilename, t0_MJD, stepTimes );
 % eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
 
-timestep = 0.75;
-prediction_horizon = 3;
+timestep = 0.1; % 10; %0.75;
+prediction_horizon = 20; % 12;
 duration = 60; %numSteps*stepLength;
 % eph = SimulateSatellite_customMPC( satelliteFilename, t0_MJD, ...
 %     timestep, duration, prediction_horizon );
@@ -128,15 +128,15 @@ PlotRotRate( omega )
 
 %%
 
-% qArray = quaternion(eph(:,8:11));
+% qArray = quaternion(eph(1:20,8:11));
 % tp = theaterPlot;
 % op = orientationPlotter(tp);
 % axis([-1 1 -1 1 -1 1])
 % view(3)
-% for ephIter = 1:length(eph(:,1))
+% for ephIter = 1:length(qArray)
 %     %clf reset
 %     plotOrientation(op,qArray(ephIter,:));
-%     pause(1e-3)
+%     pause(1e-0)
 % end
 
 

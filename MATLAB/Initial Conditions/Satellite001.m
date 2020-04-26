@@ -20,13 +20,15 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 %% Propulsion
 % Based on water propulsion from https://steamjet.space
 
+% NanoFEEP https://doi.org/10.1016/j.actaastro.2018.01.012
+
 sat.propulsion.exists = true;
-propRho0 = 100;
-std_isp = 5000;
+propRho0 = 1000;
+std_isp = 2400;
 
 
 sat.propulsion.minThrust = 15 * 10^-3; % N
-sat.propulsion.maxThrust = 20 * 10^-3; % N
+sat.propulsion.maxThrust = 8 * 10^-6; % 20 * 10^-3; % N
 
 % Thruster 1 controlling positive X-axis spin
 sat.propulsion.thrusters(1).isp = std_isp;
@@ -177,7 +179,7 @@ sat.constr.surfaceCenterVectorsNormalVectorsAreas = [ ...
 %% Satellite initial condition
 
 % Initial orientation quaternion and angular velocity
-sat.initCond.q_ECI = EulerToQuaternion(pi/3,pi/8,-pi/5); % (0,0,0); %
+sat.initCond.q_ECI = EulerToQuaternion(pi/3,pi/8,-pi/5); % (0,0,0); % 
 sat.initCond.w_body = [0; 0; 0];
 % Initial orbit parameters
 sat.initCond.orb_T = 0;
@@ -228,6 +230,7 @@ sat.rw.I_mat = (sat.rw.mass * sat.rw.radius^2) * 0.5 * eye(4,4);
 sat.rw.A_mat =  [sqrt(2/3), -sqrt(2/3),  0,          0;
                 sqrt(1/3),  sqrt(1/3),  -sqrt(1/3),  -sqrt(1/3);
                 0,          0,          sqrt(2/3),  -sqrt(2/3);]; % Configuration matrix
+            
 sat.rw.A_MPinv_mat = sat.rw.A_mat'/(sat.rw.A_mat*sat.rw.A_mat');
 
 sat.rw.maxAcc = sat.rw.maxTorque / ((sat.rw.mass * sat.rw.radius^2) * 0.5);

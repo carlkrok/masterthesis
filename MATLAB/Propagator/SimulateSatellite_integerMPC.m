@@ -96,10 +96,10 @@ Y_simple = [Y(1:17),Y(18:23),zeros(1,6)]';
 U = U0;
 
 U_lb = [ -mtqData.maxDipoleMoment .* ones(3,1);...
-        -rwData.maxAcc .* ones(4,1); ...
+        -rwData.maxAcc .* timestep .* ones(4,1); ...
         zeros(6,1)];
 U_ub = [ mtqData.maxDipoleMoment .* ones(3,1); ...
-    rwData.maxAcc .* ones(4,1); ...
+    rwData.maxAcc .* timestep .* ones(4,1); ...
     ones(6,1)]; % propulsionData.maxThrust .* 
 
 Y_lb = [zeros(13,1); -rwData.maxVel .*ones(4,1); zeros(12,1)];
@@ -109,9 +109,9 @@ Y_ub = [zeros(13,1); rwData.maxVel .*ones(4,1); zeros(6,1); ...
     satData.propulsion.maxThrust .* ones(6,1)];
 Y_ub_dotVec = [zeros(13,1); ones(4,1); zeros(6,1); ones(6,1)];
 
-for currStep = 1:(duration/timestep)
+for currStep = 1:round(duration/timestep)
     
-    disp(['Iteration ',num2str(currStep),' of ',num2str(duration/timestep)]);
+    disp(['Iteration ',num2str(currStep),' of ',num2str(round(duration/timestep))]);
 
     thisT = currStep*timestep;
     mjd = missionData.mjd0 + thisT/86400;
@@ -147,7 +147,7 @@ for currStep = 1:(duration/timestep)
     
     b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
     b_earth_eci = rotMat_NEDToECI*b_earth_NED;
-    b_earth_body = rotMat_ECIToBody * b_earth_eci;
+    %b_earth_body = rotMat_ECIToBody * b_earth_eci;
     
     if simConfig.enableRW
         B_RW = LinearizedRW( I_mat_sys, rwData.I_mat, rwData.A_mat );
@@ -156,7 +156,7 @@ for currStep = 1:(duration/timestep)
     end
 
     if simConfig.enableMTQ
-        B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_body );
+        B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_eci );
     else
         B_MTQ = zeros(3,3);
     end
@@ -202,16 +202,41 @@ for currStep = 1:(duration/timestep)
     Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
     simConfig.referenceQuaternion);
 
-    U(7:13) = propulsionData.maxThrust .* U(7:13);
+    U(1:3) = rotMat_ECIToBody * U(1:3);
+    U(8:13) = propulsionData.maxThrust .* U(8:13);
     
+    
+    for uIter = 1:3
+        if U(uIter) > mtqData.maxDipoleMoment
+            U(uIter) = mtqData.maxDipoleMoment;
+        elseif U(uIter) < -mtqData.maxDipoleMoment
+            U(uIter) = -mtqData.maxDipoleMoment;
+        end
+    end
+
+    for uIter = 4:7
+        if U(uIter) > rwData.maxAcc
+            U(uIter) = rwData.maxAcc;
+        elseif U(uIter) < -rwData.maxAcc
+            U(uIter) = -rwData.maxAcc;
+        end
+    end
+
+    for uIter = 8:13
+        if U(uIter) > propulsionData.maxThrust
+            U(uIter) = propulsionData.maxThrust;
+        elseif U(uIter) < 0
+            U(uIter) = 0;
+        end
+    end
     
     plotData.mtq_m = [plotData.mtq_m; U(1:3)'];
     plotData.prop_f = [plotData.prop_f; U(8:13)'];
     
     % Implement first optimal control move
     opts = odeset('RelTol',1e-5,'AbsTol',1e-6);
-    [t, thisY] = ode45( @(t, Y) SatelliteAcceleration(Y, U, timestep, mjd), [0; timestep], Y, opts );
-    Y = thisY(length(thisY(:,1)),:);
+    [t, thisEphY] = ode45( @(t, Y) SatelliteAcceleration(Y, U, timestep, mjd), [0; timestep], Y, opts );
+    Y = thisEphY(length(thisEphY(:,1)),:);
     
     % Save plant states
     thisNorm = norm(Y(7:10));
