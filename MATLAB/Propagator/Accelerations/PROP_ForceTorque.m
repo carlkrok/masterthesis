@@ -1,5 +1,5 @@
 function [f_prop_body, t_prop_body, rho_dot, mass_dot ] = PROP_ForceTorque( ...
-    com_struct, thrusters, f_prop_cmd, t )
+    com_struct, thrusters, f_prop_cmd )
 
 global G_EARTH
 

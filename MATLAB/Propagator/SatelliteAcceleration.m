@@ -77,7 +77,7 @@ b_earth_body = rotMat_ECIToBody * b_earth_ECI;
     
 m_mtq_body = MTQ_Cmd;
 
-MTQ_t = Magnetorquer_Torque( m_mtq_body, b_earth_body, t );
+MTQ_t = Magnetorquer_Torque( m_mtq_body, b_earth_body );
 
 
 wdot_rw_w = RW_Cmd;
@@ -88,7 +88,7 @@ F_prop_cmd = PROP_Cmd;
     
 [PROP_f_body, PROP_t_body, PROP_rho_dot, PROP_mass_dot ] = ...
     PROP_ForceTorque( com_struct, ...
-    satData.propulsion.thrusters, F_prop_cmd, t );
+    satData.propulsion.thrusters, F_prop_cmd );
 
 PROP_f_ECI = rotMat_BodyToECI * PROP_f_body;
 a_tot = a_tot + PROP_f_ECI ./ tot_mass;
