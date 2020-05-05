@@ -1,22 +1,43 @@
 function U = ga_MPC(Y0, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
     Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, qRef)
 
+global mtqData
+global rwData
+global propulsionData
+global simConfig
 
-X_ref = repmat([zeros(7,1);qRef(2:4);zeros(19,1)],prediction_horizon,1);
+rw_vel_ref = 1000*2*pi/60;
+rw_vel = Y0(8:11);
+chi_ref = repmat([0;qRef(2:4);zeros(3,1);rw_vel_ref.*ones(4,1); ...
+    zeros(6,1)],prediction_horizon,1);
 
-attitude_weight = 1e8;
-rw_actuation_weight = 10;
-mtq_weight = 1;
-thrust_weight = 1e4; %1.5e9;
-rw_momentum_weight = 1e-1;
+attitude_weight = 1e10;
 
-
-u_integrated_cell = {prediction_horizon.*eye(13)};
-for horizonIter = 1:(prediction_horizon-1)
-    u_integrated_cell{horizonIter+1} = ...
-        (prediction_horizon-horizonIter) .* eye(13);
+if simConfig.enableRW
+    rw_actuation_weights = rwData.idlePower + 1/rwData.efficiency .* ...
+    rwData.I_mat * (rw_vel_ref .* ones(4,1)); ... abs(rw_vel);
+    rw_momentum_weights = 1e3*rw_actuation_weights;
+else
+    rw_actuation_weights = zeros(4,1);
+    rw_momentum_weights = zeros(4,1);
 end
 
+if simConfig.enableMTQ
+    mtq_weight = mtqData.powerFactor;
+else
+    mtq_weight = 0;
+end
+
+if simConfig.enablePropulsion
+    thrust_weight = 0.84/propulsionData.maxThrust; ...1e3*
+else
+    thrust_weight = 0;
+end
+
+
+% if any(rw_actuation_weights == 0)
+%     rw_actuation_weights(rw_actuation_weights == 0) = 0.1;
+% end
 
 A_chi = A_disc;
 
@@ -44,38 +65,44 @@ end
 
 chi_0 = A_chi * Y0; % - X_ref;
 
-X_weightMat = diag([zeros(1,7),attitude_weight .* ones(1,3),zeros(1,3), ...
-    rw_momentum_weight .* ones(1,4), zeros(1,12)]);
+X_weightMat = diag([zeros(1,1),attitude_weight .* ones(1,3),zeros(1,3), ...
+    rw_momentum_weights', zeros(1,6)]);
 H_cell = repmat({X_weightMat},1,prediction_horizon);
-H = blkdiag(H_cell{:});
+H_attitude = blkdiag(H_cell{:});
 
 U_weightMat = diag( [mtq_weight .* ones(1,3), ...
-    rw_actuation_weight .* ones(1,4), thrust_weight .* ones(1,6)] );
+    zeros(1,4), thrust_weight .* ones(1,6)] );
 W_cell = repmat({U_weightMat},1,prediction_horizon);
-W_weight = blkdiag(W_cell{:});
-U_integratedMat = blkdiag(u_integrated_cell{:});
+W_actuation = blkdiag(W_cell{:});
 
-W = W_weight * U_integratedMat;
+Z_actuation = repmat([zeros(1,3), rw_actuation_weights', zeros(1,6)],1,prediction_horizon);
 
 A_ub_cell = repmat({diag(Y_ub_dotVec)},1,prediction_horizon);
 A_ub = blkdiag(A_ub_cell{:});
-A_lb_cell = repmat({diag(Y_lb_dotVec)},1,prediction_horizon);
+A_lb_cell = repmat({-1.*diag(Y_lb_dotVec)},1,prediction_horizon);
 A_lb = blkdiag(A_lb_cell{:});
+
 A_y = [ A_ub; A_lb ];
 
-b_y = [repmat(Y_ub,prediction_horizon,1);repmat(Y_lb,prediction_horizon,1)];
+b_y = [repmat(Y_ub,prediction_horizon,1);repmat(-1.*Y_lb,prediction_horizon,1)];
 
 A_u = A_y * B_chi;
 
 b_u = b_y - A_y * chi_0;
 
+c = (( chi_0' * H_attitude * B_chi  - chi_ref'* H_attitude * B_chi ));
+D = ( B_chi' * H_attitude * B_chi + W_actuation );
+e = Z_actuation;
+
 options = optimoptions('ga', 'Display', 'off', 'MaxTime', 30); %, ...
     %'ConstraintTolerance', 1e-6, 'FunctionTolerance', 1e-9, ...
     %'PopulationSize', 500); %, 'PlotFcn', @gaplotbestf);
 
-x = ga(@( U ) ga_CostFn( U, B_chi, chi_0, H, W, U_int_index ),13*prediction_horizon,[],[], ...
+x = ga(@( U ) ga_CostFn( U, c, D, e, U_int_index ), ...
+    13*prediction_horizon,A_u,b_u, ... [],[], ... 
     [],[],repmat(U_lb,prediction_horizon,1), ...
     repmat(U_ub,prediction_horizon,1),[],U_int_index, options);
+
 
 %%
 

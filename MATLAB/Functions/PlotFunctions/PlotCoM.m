@@ -1,8 +1,8 @@
-function PlotCoM( com )
+function PlotCoM( com, timeVec )
 
 figure
 hold on
-time = 1:length(com);
+time = timeVec;
 tiledlayout(3,1)
 ax1 = nexttile;
 grid on

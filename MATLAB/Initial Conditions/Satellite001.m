@@ -23,12 +23,12 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 % NanoFEEP https://doi.org/10.1016/j.actaastro.2018.01.012
 
 sat.propulsion.exists = true;
-propRho0 = 1000;
-std_isp = 2400;
+propRho0 = 10^4;
+std_isp = 3000;
 
 
-sat.propulsion.minThrust = 15 * 10^-3; % N
-sat.propulsion.maxThrust = 8 * 10^-6; % 20 * 10^-3; % N
+%sat.propulsion.minThrust = 15 * 10^-3; % N
+sat.propulsion.maxThrust = 20 * 10^-6; % 20 * 10^-3; % N
 
 % Thruster 1 controlling positive X-axis spin
 sat.propulsion.thrusters(1).isp = std_isp;
@@ -76,22 +76,22 @@ sat.propulsion.thrusters(4).structArm = [sat.constr.dim_x; ...
 sat.propulsion.thrusters(5).isp = std_isp;
 sat.propulsion.thrusters(5).structureDim = ...
     [0, 0.01; ...
-    0, 0.001; ...
-    sat.constr.dim_z-0.01, sat.constr.dim_z];
+    0, 0.01; ...
+    sat.constr.dim_z/2-0.005, sat.constr.dim_z/2+0.005]; % sat.constr.dim_z-0.01, sat.constr.dim_z]; % 
 sat.propulsion.thrusters(5).structureThrustDir = [-sqrt(1/2);sqrt(1/2);0];
 sat.propulsion.thrusters(5).rho = propRho0;
 sat.propulsion.thrusters(5).structArm = [0; ...
-    0; sat.constr.dim_z];
+    0; sat.constr.dim_z/2]; % 0; sat.constr.dim_z]; % 
 % Thruster 6 controlling negative Z-axis spin
 sat.propulsion.thrusters(6).isp = std_isp;
 sat.propulsion.thrusters(6).structureDim = ...
     [sat.constr.dim_x-0.01, sat.constr.dim_x; ...
     sat.constr.dim_y-0.01, sat.constr.dim_y; ...
-    sat.constr.dim_z-0.01, sat.constr.dim_z];
+    sat.constr.dim_z/2-0.005, sat.constr.dim_z/2+0.005]; % sat.constr.dim_z-0.01, sat.constr.dim_z]; % 
 sat.propulsion.thrusters(6).structureThrustDir = [-sqrt(1/2);sqrt(1/2);0];
 sat.propulsion.thrusters(6).rho = propRho0;
 sat.propulsion.thrusters(6).structArm = [sat.constr.dim_x; ...
-    sat.constr.dim_y; sat.constr.dim_z];
+    sat.constr.dim_y; sat.constr.dim_z/2]; % sat.constr.dim_y; sat.constr.dim_z]; % 
 
 
 %% Satellite construction
@@ -202,7 +202,11 @@ sat.initCond.orb_h = MomentumNorm( MU_EARTH, sat.initCond.orb_a, sat.initCond.or
 
 sat.mtq.exists = true;
 
-sat.mtq.maxDipoleMoment = 0.42;
+sat.mtq.maxDipoleMoment = 2*0.42;
+
+sat.mtq.maxPower = 2*0.86;
+
+sat.mtq.powerFactor = 0.86 / 0.42^2;
 
 sat.mtq.resistance = 5^2 / 0.86; % Voltage squared over power
 
@@ -222,6 +226,9 @@ sat.rw.maxMomentum = 20*10^-3;
 sat.rw.maxTorque = 3.2*10^-3;
 sat.rw.mass = 0.137;
 
+sat.rw.maxPower = 3;
+sat.rw.idlePower = 0.045;
+
 sat.rw.w = zeros(4,1); % Initial angular velocity values for RWs 
 
 %sat_reaction_wheels based on nanoavionics NA-4RWO-GO-R8, modelled as solid disk 
@@ -235,4 +242,6 @@ sat.rw.A_MPinv_mat = sat.rw.A_mat'/(sat.rw.A_mat*sat.rw.A_mat');
 
 sat.rw.maxAcc = sat.rw.maxTorque / ((sat.rw.mass * sat.rw.radius^2) * 0.5);
 sat.rw.maxVel = sat.rw.maxMomentum / ((sat.rw.mass * sat.rw.radius^2) * 0.5);
+
+sat.rw.efficiency = 1/sat.rw.maxPower * sat.rw.maxVel * sat.rw.maxTorque;
 

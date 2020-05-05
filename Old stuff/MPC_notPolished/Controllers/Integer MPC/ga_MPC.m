@@ -7,7 +7,7 @@ X_ref = repmat([zeros(7,1);qRef(2:4);zeros(19,1)],prediction_horizon,1);
 attitude_weight = 1e8;
 rw_actuation_weight = 10;
 mtq_weight = 1;
-thrust_weight = 1e4; %1.5e9;
+thrust_weight = 1.5e9; % 1e4; %
 rw_momentum_weight = 1e-1;
 
 

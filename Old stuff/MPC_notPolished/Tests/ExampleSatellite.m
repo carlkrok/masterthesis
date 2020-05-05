@@ -35,14 +35,14 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
-simConfig.enableMTQ = true;
-%simConfig.enableMTQ = false;
+%simConfig.enableMTQ = true;
+simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
 
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
@@ -54,9 +54,9 @@ simConfig.referenceQuaternion = [1; 0; 0; 0];
 %eph = SimulateSatellite_linearizedMatlab( satelliteFilename, t0_MJD, stepTimes );
 % eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
 
-timestep = 1; % 10; %0.75;
-prediction_horizon = 10; % 12;
-duration = 120; %numSteps*stepLength;
+timestep = 10; % 10; %0.75;
+prediction_horizon = 12; % 12;
+duration = 1000; %numSteps*stepLength;
 % eph = SimulateSatellite_customMPC( satelliteFilename, t0_MJD, ...
 %     timestep, duration, prediction_horizon );
 eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...

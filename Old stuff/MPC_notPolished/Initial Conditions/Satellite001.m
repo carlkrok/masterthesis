@@ -24,11 +24,11 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 
 sat.propulsion.exists = true;
 propRho0 = 1000;
-std_isp = 2400;
+std_isp = 3000;
 
 
 sat.propulsion.minThrust = 15 * 10^-3; % N
-sat.propulsion.maxThrust = 8 * 10^-6; % 20 * 10^-3; % N
+sat.propulsion.maxThrust = 12 * 10^-6; % 20 * 10^-3; % N
 
 % Thruster 1 controlling positive X-axis spin
 sat.propulsion.thrusters(1).isp = std_isp;
@@ -77,21 +77,21 @@ sat.propulsion.thrusters(5).isp = std_isp;
 sat.propulsion.thrusters(5).structureDim = ...
     [0, 0.01; ...
     0, 0.001; ...
-    sat.constr.dim_z-0.01, sat.constr.dim_z];
+    sat.constr.dim_z/2-0.005, sat.constr.dim_z/2+0.005];
 sat.propulsion.thrusters(5).structureThrustDir = [-sqrt(1/2);sqrt(1/2);0];
 sat.propulsion.thrusters(5).rho = propRho0;
 sat.propulsion.thrusters(5).structArm = [0; ...
-    0; sat.constr.dim_z];
+    0; sat.constr.dim_z/2];
 % Thruster 6 controlling negative Z-axis spin
 sat.propulsion.thrusters(6).isp = std_isp;
 sat.propulsion.thrusters(6).structureDim = ...
     [sat.constr.dim_x-0.01, sat.constr.dim_x; ...
     sat.constr.dim_y-0.01, sat.constr.dim_y; ...
-    sat.constr.dim_z-0.01, sat.constr.dim_z];
+    sat.constr.dim_z-0.005, sat.constr.dim_z/2+0.005];
 sat.propulsion.thrusters(6).structureThrustDir = [-sqrt(1/2);sqrt(1/2);0];
 sat.propulsion.thrusters(6).rho = propRho0;
 sat.propulsion.thrusters(6).structArm = [sat.constr.dim_x; ...
-    sat.constr.dim_y; sat.constr.dim_z];
+    sat.constr.dim_y; sat.constr.dim_z/2];
 
 
 %% Satellite construction

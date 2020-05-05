@@ -8,8 +8,8 @@ run(satelliteFilename);
 global simConfig
 
 global plotData
-plotData.mtq_m = zeros(1,3);
-plotData.prop_f = zeros(1,6);
+plotData.mtq_m = zeros(1,4);
+plotData.prop_f = zeros(1,7);
 plotData.cost_attitude = 0;
 plotData.cost_actuation = 0;
 plotData.cost_rw_momentum = 0;
@@ -35,8 +35,8 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -49,19 +49,14 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 
-%eph = SimulateSatellite_NLMPCfullModel( satelliteFilename, t0_MJD, stepTimes );
-%eph = SimulateSatellite_NLMPCsimpleModel( satelliteFilename, t0_MJD, stepTimes );
-%eph = SimulateSatellite_linearizedMatlab( satelliteFilename, t0_MJD, stepTimes );
-% eph = SimulateSatellite_linearizedCustom( satelliteFilename, t0_MJD, stepTimes );
-
 timestep = 1; % 10; %0.75;
-prediction_horizon = 10; % 12;
-duration = 120; %numSteps*stepLength;
-% eph = SimulateSatellite_customMPC( satelliteFilename, t0_MJD, ...
-%     timestep, duration, prediction_horizon );
+prediction_horizon = 5; % 12;
+duration = 300; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
     timestep, duration, prediction_horizon );
 
+
+timeVec = eph(:,1);
 
 %%
 
@@ -102,9 +97,9 @@ eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
 %%
 
 quaternions = eph(:,8:11);
-PlotEulerAngles( quaternions );
+PlotEulerAngles( quaternions, timeVec );
 
-PlotQuaternionError( simConfig.referenceQuaternion, quaternions)
+PlotQuaternionError( simConfig.referenceQuaternion, quaternions, timeVec)
 
 
 %%
@@ -116,37 +111,38 @@ PlotQuaternionError( simConfig.referenceQuaternion, quaternions)
 
 if simConfig.enableRW
 rw_w = eph(:,15:18);
-PlotRWMomentum( rw_w )
+PlotRWMomentum( rw_w, timeVec )
 end
 
 %%
 
 
 omega = eph(:,12:14);
-PlotRotRate( omega )
+PlotRotRate( omega, timeVec )
 
 
 %%
 
-% qArray = quaternion(eph(1:20,8:11));
-% tp = theaterPlot;
-% op = orientationPlotter(tp);
-% axis([-1 1 -1 1 -1 1])
-% view(3)
-% for ephIter = 1:length(qArray)
-%     %clf reset
-%     plotOrientation(op,qArray(ephIter,:));
-%     pause(1e-0)
-% end
+qArray = quaternion(eph(1:20,8:11));
+tp = theaterPlot;
+op = orientationPlotter(tp);
+axis([-1 1 -1 1 -1 1])
+view(3)
+for ephIter = 1:length(qArray)
+    %clf reset
+    plotOrientation(op,qArray(ephIter,:));
+    pause(1e-0)
+end
 
 
 %%
 
 if simConfig.enablePropulsion
 prop_rho = eph(:,25:30);
-PlotPropRho( prop_rho )
+PlotPropRho( prop_rho, timeVec )
+PlotPropMass( prop_rho, timeVec )
 com = eph(:,31:33);
-PlotCoM( com )
+PlotCoM( com, timeVec )
 end
 
 %%

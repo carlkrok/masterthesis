@@ -1,25 +1,26 @@
-function PlotRotRate( omega )
-
-numSteps = length(omega(:,1));
+function PlotRotRate( omega, timeVec )
 
 figure
 hold on
-x = 0:numSteps-1;
+x = timeVec;
 tiledlayout(3,1)
 ax1 = nexttile;
 grid on
 plot(x, omega(:,1));%.*(180/pi))
-ylabel('rad/s')
+ylabel('[ rad / s ]')
+xlabel('[s]')
 title('\omega_{sat}^{body} X-Axis')
 ax2 = nexttile;
 grid on
 plot(x, omega(:,2));%.*(180/pi))
-ylabel('rad/s')
+ylabel('[ rad / s ]')
+xlabel('[s]')
 title('\omega_{sat}^{body} Y-Axis')
 ax3 = nexttile;
 grid on
 plot(x, omega(:,3));%.*(180/pi))
-ylabel('rad/s')
+ylabel('[ rad / s ]')
+xlabel('[s]')
 title('\omega_{sat}^{body} Z-Axis')
 grid(ax1,'on')
 grid(ax2,'on')

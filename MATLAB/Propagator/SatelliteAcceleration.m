@@ -73,6 +73,10 @@ v_Rel_Body = rotMat_ECIToBody * v_Rel_ECI;
 
 b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
 b_earth_ECI = rotMat_NEDToECI*b_earth_NED;
+
+% global B_EARTH_ECI_DEBUG
+% b_earth_ECI = B_EARTH_ECI_DEBUG;
+
 b_earth_body = rotMat_ECIToBody * b_earth_ECI;
     
 m_mtq_body = MTQ_Cmd;
