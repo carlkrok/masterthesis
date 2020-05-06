@@ -1,5 +1,5 @@
 function U = ga_MPC(Y0, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
-    Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, qRef)
+    Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, qRef, omegaRef)
 
 global mtqData
 global rwData
@@ -8,22 +8,25 @@ global simConfig
 
 rw_vel_ref = 1000*2*pi/60;
 rw_vel = Y0(8:11);
-chi_ref = repmat([0;qRef(2:4);zeros(3,1);rw_vel_ref.*ones(4,1); ...
+chi_ref = repmat([0;qRef(2:4);omegaRef;rw_vel_ref.*ones(4,1); ...
     zeros(6,1)],prediction_horizon,1);
 
-attitude_weight = 1e10;
+attitude_weight = 1e6;
+attitude_eta_weight = 0;
+
+omega_weight = 0;
 
 if simConfig.enableRW
     rw_actuation_weights = rwData.idlePower + 1/rwData.efficiency .* ...
     rwData.I_mat * (rw_vel_ref .* ones(4,1)); ... abs(rw_vel);
-    rw_momentum_weights = 1e3*rw_actuation_weights;
+    rw_momentum_weights = 10^(-1)*rw_actuation_weights;
 else
     rw_actuation_weights = zeros(4,1);
     rw_momentum_weights = zeros(4,1);
 end
 
 if simConfig.enableMTQ
-    mtq_weight = mtqData.powerFactor;
+    mtq_weight = 10^0*mtqData.powerFactor;
 else
     mtq_weight = 0;
 end
@@ -65,7 +68,8 @@ end
 
 chi_0 = A_chi * Y0; % - X_ref;
 
-X_weightMat = diag([zeros(1,1),attitude_weight .* ones(1,3),zeros(1,3), ...
+X_weightMat = diag([attitude_eta_weight,attitude_weight .* ones(1,3), ...
+    omega_weight .* ones(1,3), ...
     rw_momentum_weights', zeros(1,6)]);
 H_cell = repmat({X_weightMat},1,prediction_horizon);
 H_attitude = blkdiag(H_cell{:});

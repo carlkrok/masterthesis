@@ -113,14 +113,15 @@ Y_lb_dotVec = [zeros(7,1); ones(4,1); zeros(6,1)];
 Y_ub = [zeros(7,1); rwData.maxVel .*ones(4,1); zeros(6,1)];
 Y_ub_dotVec = [zeros(7,1); ones(4,1); zeros(6,1)];
 
-for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
+for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
     
     disp(['Iteration ',num2str(currStep),' of ',num2str(round(duration/timestep))]);
 
-%     if currStep == 1 % DEBUG
+    thisT = currStep*timestep;
+    mjd = missionData.mjd0 + thisT/86400;
         
-        thisT = currStep*timestep;
-        mjd = missionData.mjd0 + thisT/86400;
+%     if currStep == 1 % DEBUG
+
 
         r_ECI = Y(1:3)';
         q_ECI = Y(7:10)';
@@ -140,10 +141,6 @@ for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
                 rho_thrusters(thrusterIter) );
             tot_mass = tot_mass + thisMass;
         end
-    
-
-    
-%         global B_EARTH_ECI_DEBUG
         
         r_ECEF = posECIToECEF(thisT, missionData.mjd0, r_ECI);
         [ latitude, longitude, altitude ] = ECEFToLLA( r_ECEF );
@@ -157,8 +154,9 @@ for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
 
         b_earth_NED = MagneticField( mjd, latitude, longitude, altitude );
         b_earth_eci = rotMat_NEDToECI*b_earth_NED;
-        %b_earth_body = rotMat_ECIToBody * b_earth_eci;
+        b_earth_body = rotMat_ECIToBody * b_earth_eci;
         
+%         global B_EARTH_ECI_DEBUG
 %         B_EARTH_ECI_DEBUG = b_earth_eci;
     
         if simConfig.enableRW
@@ -168,7 +166,7 @@ for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
         end
 
         if simConfig.enableMTQ
-            B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_eci );
+            B_MTQ = LinearizedMTQ( I_mat_sys, b_earth_body );
         else
             B_MTQ = zeros(3,3);
         end
@@ -195,7 +193,7 @@ for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
     
 %         Uall = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
 %             Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%             simConfig.referenceQuaternion);
+%             simConfig.referenceQuaternion, simConfig.referenceOmega);
 %         
 %     end
 %     
@@ -203,32 +201,38 @@ for currStep = 1:(round(duration/timestep)) %-1) % DEBUG
     
     U = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, U_lb, U_ub, ...
     Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-    simConfig.referenceQuaternion);
+    simConfig.referenceQuaternion, simConfig.referenceOmega);
 
-    U(1:3) = rotMat_ECIToBody * U(1:3);
+
     U(8:13) = propulsionData.maxThrust .* U(8:13);
     
     
     for uIter = 1:3
         if U(uIter) > mtqData.maxDipoleMoment
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = mtqData.maxDipoleMoment;
         elseif U(uIter) < -mtqData.maxDipoleMoment
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = -mtqData.maxDipoleMoment;
         end
     end
 
     for uIter = 4:7
         if U(uIter) > rwData.maxAcc
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = rwData.maxAcc;
         elseif U(uIter) < -rwData.maxAcc
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = -rwData.maxAcc;
         end
     end
 
     for uIter = 8:13
         if U(uIter) > propulsionData.maxThrust
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = propulsionData.maxThrust;
         elseif U(uIter) < 0
+            disp('Something is wrong! U lim exceeded')
             U(uIter) = 0;
         end
     end

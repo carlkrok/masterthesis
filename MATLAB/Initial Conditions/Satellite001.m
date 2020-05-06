@@ -182,7 +182,7 @@ sat.constr.surfaceCenterVectorsNormalVectorsAreas = [ ...
 sat.initCond.q_ECI = EulerToQuaternion(pi/3,pi/8,-pi/5); % (0,0,0); % 
 sat.initCond.w_body = [0; 0; 0];
 % Initial orbit parameters
-sat.initCond.orb_T = 0;
+sat.initCond.orb_T = 45;
 sat.initCond.orb_i = 97;
 sat.initCond.orb_O = 0;
 sat.initCond.orb_w = 0;

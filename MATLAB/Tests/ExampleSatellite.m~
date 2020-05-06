@@ -19,7 +19,7 @@ plotData.drag_torque_norm = zeros(1,2);
 plotData.grav_torque_norm = zeros(1,2);
 plotData.wdot_sat_body = zeros(1,4);
 
-t0_UTC = [2005 10 31 12 00 00.00];
+t0_UTC = [2005 10 31 12 56 37.67];
 t0_MJD = mjuliandate(t0_UTC);
 
 sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
@@ -35,14 +35,14 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-%simConfig.enableRW = true;
-simConfig.enableRW = false;
+simConfig.enableRW = true;
+%simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
 
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
@@ -50,9 +50,9 @@ simConfig.enablePointing = false;
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 simConfig.referenceOmega = [0; 0; 0];
 
-timestep = 10; % 1; %0.75;
-prediction_horizon = 6; % 5; % 12;
-duration = 900; %numSteps*stepLength;
+timestep = 1; % 10; %0.75;
+prediction_horizon = 5; % 5; % 12;
+duration = 300; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
     timestep, duration, prediction_horizon );
 

@@ -30,7 +30,7 @@ com_struct = Y(30:32);
 
 %% Extrancting data from input vector
 
-MTQ_Cmd = U(1:3); % zeros(3,1); %
+MTQ_body_Cmd = U(1:3); % zeros(3,1); %
 
 RW_Cmd = U(4:7);
 
@@ -79,7 +79,7 @@ b_earth_ECI = rotMat_NEDToECI*b_earth_NED;
 
 b_earth_body = rotMat_ECIToBody * b_earth_ECI;
     
-m_mtq_body = MTQ_Cmd;
+m_mtq_body = MTQ_body_Cmd;
 
 MTQ_t = Magnetorquer_Torque( m_mtq_body, b_earth_body );
 
