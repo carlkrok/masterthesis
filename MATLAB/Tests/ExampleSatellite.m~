@@ -1,6 +1,12 @@
 clear all
 
-satelliteFilename = "Satellite001";
+
+% Choose satellite configuration
+satelliteConfiguration = 1;
+
+if satelliteConfiguration == 1
+    satelliteFilename = "Satellite001";
+    
 
 run earthParameters;
 run(satelliteFilename);
@@ -19,7 +25,7 @@ plotData.drag_torque_norm = zeros(1,2);
 plotData.grav_torque_norm = zeros(1,2);
 plotData.wdot_sat_body = zeros(1,4);
 
-t0_UTC = [2005 10 31 12 56 37.67];
+t0_UTC = [2005 10 31 12 00 00.00];
 t0_MJD = mjuliandate(t0_UTC);
 
 sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
@@ -50,9 +56,9 @@ simConfig.enablePointing = false;
 simConfig.referenceQuaternion = [1; 0; 0; 0];
 simConfig.referenceOmega = [0; 0; 0];
 
-timestep = 1; % 10; %0.75;
+timestep = 1; % 1; %0.75;
 prediction_horizon = 5; % 5; % 12;
-duration = 300; %numSteps*stepLength;
+duration = 1800; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( satelliteFilename, t0_MJD, ...
     timestep, duration, prediction_horizon );
 

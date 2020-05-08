@@ -1,7 +1,5 @@
-function [ eph ] = SimulateSatellite_integerMPC( mjd0, satelliteFilename, ...
-    timestep, duration, prediction_horizon, numControlVariables, ...
-    numThrusters, numPropellant)
-
+function [ eph ] = SimulateSatellite_integerMPC( mjd0, ...
+    timestep, duration, prediction_horizon )
 
 global MU_EARTH
 global R_EARTH
@@ -16,8 +14,6 @@ global missionData
 global plotData
 global satelliteConfiguration
 
-run(satelliteFilename);
-
 [r_PQW, v_PQW] = OrbitalElementsToPQW( MU_EARTH, sat.initCond.orb_h, ...
     sat.initCond.orb_e, sat.initCond.orb_T );
 R_PQWToECI = RotMat_PQWToECI( sat.initCond.orb_i, sat.initCond.orb_O, ...
@@ -27,12 +23,22 @@ v_ECI = R_PQWToECI * v_PQW;
 
 Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.w; ...
     sat.constr.Ixx_struct; sat.constr.Iyy_struct; sat.constr.Izz_struct; ...
-    sat.constr.Ixy_struct; sat.constr.Ixz_struct; sat.constr.Iyz_struct]; 
-for propIter = 1:numPropellant
-    Y0 = [Y0; sat.propulsion.thrusters(propIter).rho]; 
-end
-Y0 = [Y0; sat.constr.body_init_com_struct];
+    sat.constr.Ixy_struct; sat.constr.Ixz_struct; sat.constr.Iyz_struct; ...
+    sat.propulsion.thrusters(1).rho; ...
+    sat.propulsion.thrusters(2).rho; ...
+    sat.propulsion.thrusters(3).rho; ...
+    sat.propulsion.thrusters(4).rho; ...
+    sat.propulsion.thrusters(5).rho; ...
+    sat.propulsion.thrusters(6).rho; ...
+    sat.constr.body_init_com_struct];
 
+if satelliteConfiguration == 1
+    numControlVariables = 13;
+    numThrusters = 6;
+elseif satelliteConfiguration == 1
+    numControlVariables = 19;
+    numThrusters = 12;
+end
     
 U0 = zeros(numControlVariables,1);
 
@@ -51,7 +57,7 @@ if simConfig.enableRW
     rwData.idlePower = sat.rw.idlePower;
 else
     rwData.maxAcc = 0;
-    rwData.maxVel = sat.rw.maxVel;
+    rwData.maxVel = 0;
     rwData.maxVelocity = 0;
     rwData.efficiency = 1;
     rwData.idlePower = 0;
@@ -108,11 +114,11 @@ U_ub = [ mtqData.maxDipoleMoment .* ones(3,1); ...
     rwData.maxAcc .* timestep .* ones(4,1); ...
     ones(numThrusters,1)]; % propulsionData.maxThrust .* 
 
-Y_lb = [zeros(7,1); -rwData.maxVel .*ones(4,1); zeros(numPropellant,1)];
-Y_lb_dotVec = [zeros(7,1); ones(4,1); zeros(numPropellant,1)];
+Y_lb = [zeros(7,1); -rwData.maxVel .*ones(4,1); zeros(6,1)];
+Y_lb_dotVec = [zeros(7,1); ones(4,1); zeros(6,1)];
     
-Y_ub = [zeros(7,1); rwData.maxVel .*ones(4,1); zeros(numPropellant,1)];
-Y_ub_dotVec = [zeros(7,1); ones(4,1); zeros(numPropellant,1)];
+Y_ub = [zeros(7,1); rwData.maxVel .*ones(4,1); zeros(6,1)];
+Y_ub_dotVec = [zeros(7,1); ones(4,1); zeros(6,1)];
 
 for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
     
@@ -130,13 +136,13 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
         I_mat_body = [Y(18), Y(21), Y(22); ...
                     Y(21), Y(19), Y(23); ...
                     Y(22), Y(23), Y(20)];
-        com_struct = Y(24+numPropellant:24+numPropellant+2)';
-        rho_thrusters = Y(24:24+numPropellant-1)';
+        com_struct = Y(30:32)';
+        rho_thrusters = Y(24:29)';
 
         I_mat_sys = I_mat_body + rwData.A_mat * rwData.I_mat * rwData.A_MPinv_mat;
 
         tot_mass = satData.constr.body_mass;
-        for thrusterIter = 1:numPropellant
+        for thrusterIter = 1:length(satData.propulsion.thrusters)
             [ thisCom, thisMass ] = propMassCoM( ...
                 satData.propulsion.thrusters(thrusterIter).structureDim, ...
                 rho_thrusters(thrusterIter) );
@@ -180,19 +186,18 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
         end
 
         
-        A_cont = LinearizedStateMat( q_ECI, numPropellant );
-        B_cont = [zeros(4,8+numThrusters-1); ...
+        A_cont = LinearizedStateMat( q_ECI );
+        B_cont = [zeros(4,13); ...
         B_MTQ, B_RW, B_PROP; ...
-        zeros(4,3), eye(4,4), zeros(4,numThrusters); ...
-        zeros(numPropellant,7), LinearizedRHO( ...
-            satData.propulsion.thrusters, numThrusters)];
+        zeros(4,3), eye(4,4), zeros(4,6); ...
+        zeros(6,7), LinearizedRHO(satData.propulsion.thrusters, numThrusters)];
 
         A_disc = eye(size(A_cont)) + timestep .* A_cont;
         B_disc = timestep .* B_cont;
 
 
 
-        Y_simple = [Y(7:17),Y(24:24+numPropellant-1)]';
+        Y_simple = [Y(7:17),Y(24:29)]';
     
 %         Uall = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, ...
 %             numControlVariables, numThrusters, U_lb, U_ub, ...
@@ -204,7 +209,7 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
 %     U = Uall(1+currStep*13:13+currStep*13);
     
     U = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, ...
-        numControlVariables, numThrusters, numPropellant, U_lb, U_ub, ...
+        numControlVariables, numThrusters, U_lb, U_ub, ...
         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
         simConfig.referenceQuaternion, simConfig.referenceOmega);
 
@@ -232,7 +237,7 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
         end
     end
 
-    for uIter = 8:8+numThrusters-1
+    for uIter = 8:13
         if U(uIter) > propulsionData.maxThrust
             disp('Something is wrong! U lim exceeded')
             U(uIter) = propulsionData.maxThrust;
@@ -243,12 +248,11 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
     end
     
     plotData.mtq_m = [plotData.mtq_m; thisT, U(1:3)'];
-    plotData.prop_f = [plotData.prop_f; thisT, U(8:8+numThrusters-1)'];
+    plotData.prop_f = [plotData.prop_f; thisT, U(8:13)'];
     
     % Implement first optimal control move
     opts = odeset('RelTol',1e-5,'AbsTol',1e-6);
-    [t, thisEphY] = ode45( @(t, Y) SatelliteAcceleration(Y, U, ...
-        timestep, mjd, numThrusters, numPropellant), [0; timestep], Y, opts );
+    [t, thisEphY] = ode45( @(t, Y) SatelliteAcceleration(Y, U, timestep, mjd), [0; timestep], Y, opts );
     Y = thisEphY(length(thisEphY(:,1)),:);
     
     % Save plant states
