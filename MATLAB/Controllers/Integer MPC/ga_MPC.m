@@ -6,21 +6,41 @@ global mtqData
 global rwData
 global propulsionData
 global simConfig
+global satelliteConfiguration
 
 rw_vel_ref = 1000*2*pi/60;
 rw_vel = Y0(8:11);
 chi_ref = repmat([0;qRef(2:4);omegaRef;rw_vel_ref.*ones(4,1); ...
     zeros(numPropellant,1)],prediction_horizon,1);
 
-attitude_weight = 1e8;
+if satelliteConfiguration == 2 && simConfig.enableQuatRef
+    attitude_weight = 1e9; % 1e9;
+elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
+    attitude_weight = 1e9;
+else
+    attitude_weight = 0;
+end
+    
 attitude_eta_weight = 0;
 
-omega_weight = 0;
+if simConfig.enableOmegaRef
+    omega_weight = 1e6;
+else
+    omega_weight = 0;
+end
+
 
 if simConfig.enableRW
     rw_actuation_weights = rwData.idlePower + 1/rwData.efficiency .* ...
     rwData.I_mat * (rw_vel_ref .* ones(4,1)); 
-    rw_momentum_weight = 1e-2; %10; 
+    if satelliteConfiguration == 2
+        rw_momentum_weight = 100;
+    elseif satelliteConfiguration == 1 
+        rw_momentum_weight = 100;
+    end
+    if simConfig.enableOmegaRef
+        rw_momentum_weight = 0;
+    end
 else
     rw_actuation_weights = zeros(4,1);
     rw_momentum_weight = 0;
@@ -34,6 +54,9 @@ end
 
 if simConfig.enablePropulsion
     thrust_weight = propulsionData.power/propulsionData.maxThrust; ...1e3*
+    if satelliteConfiguration == 2
+        thrust_weight = 2e8*thrust_weight; % 1e3*
+    end
 else
     thrust_weight = 0;
 end

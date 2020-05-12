@@ -1,9 +1,34 @@
 clear all
 
 global satelliteConfiguration
+global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 1;
+satelliteConfiguration = 2;
+
+simConfig.enableJ2 = true;
+simConfig.enableDrag = true;
+simConfig.enableSRP = true;
+simConfig.enableGravityGradient = true;
+
+simConfig.enableRW = true;
+%simConfig.enableRW = false;
+
+simConfig.enableMTQ = true;
+%simConfig.enableMTQ = false;
+
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
+simConfig.enablePropulsionInertia = true;
+%simConfig.enablePropulsionInertia = false;
+
+simConfig.enablePointing = false;
+%simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
+%simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
+simConfig.enableQuatRef = true;
+simConfig.referenceQuaternion = [1; 0; 0; 0];
+simConfig.enableOmegaRef = false;
+simConfig.referenceOmega = [0.0125; 0; 0];
 
 
 if satelliteConfiguration == 1
@@ -46,31 +71,17 @@ for stepIter = 0 : numSteps
    stepTimes( stepIter+1 ) = (stepIter * stepLength);
 end
 
-simConfig.enableJ2 = true;
-simConfig.enableDrag = true;
-simConfig.enableSRP = true;
-simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
-
-simConfig.enableMTQ = true;
-%simConfig.enableMTQ = false;
-
-simConfig.enablePropulsion = true;
-%simConfig.enablePropulsion = false;
-
-simConfig.enablePointing = false;
-%simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
-%simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.referenceQuaternion = [1; 0; 0; 0];
-simConfig.referenceOmega = [0; 0; 0];
-
-timestep = 1; % 1; %0.75;
-prediction_horizon = 10; % 5; % 12;
-duration = 180; %numSteps*stepLength;
-eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, ...
-    timestep, duration, prediction_horizon, numControlVariables, ...
+timestep_pd = 0.1;
+timestep_controller = 1; 
+timestep_prediction = 1; 
+prediction_horizon = 5; 
+duration = 5; %numSteps*stepLength;
+% eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
+%     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
+%     numThrusters, numPropellant );
+eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
+    timestep_pd, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
 
 
@@ -159,6 +170,7 @@ if simConfig.enablePropulsion
 prop_rho = eph(:,25:25+numPropellant-1);
 PlotPropRho( prop_rho, timeVec )
 PlotPropMass( prop_rho, timeVec )
+PlotTotPropMass( prop_rho, timeVec )
 com = eph(:,25+numPropellant:25+numPropellant+2);
 PlotCoM( com, timeVec )
 end

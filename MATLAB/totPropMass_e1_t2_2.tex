@@ -1,0 +1,68 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=6.028in,
+height=4.754in,
+at={(1.011in,0.642in)},
+scale only axis,
+xmin=0,
+xmax=30,
+xlabel style={font=\color{white!15!black}},
+xlabel={[ s ]},
+ymin=-1.38777878078145e-11,
+ymax=400,
+ylabel style={font=\color{white!15!black}},
+ylabel={$\text{[ }\mu\text{ g ]}$},
+axis background/.style={fill=white},
+title style={font=\bfseries},
+title={Propellant Consumption},
+axis x line*=bottom,
+axis y line*=left,
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1]
+  table[row sep=crcr]{%
+0	-1.38777878078145e-11\\
+1	10.193679918391\\
+2	24.4648318042245\\
+3	32.6197757389846\\
+4	48.9296636084907\\
+5	65.2395514779969\\
+6	77.4719673801855\\
+7	89.7043832823602\\
+8	106.01427115188\\
+9	118.246687054055\\
+10	132.517838939888\\
+11	138.634046890976\\
+12	150.866462793164\\
+13	165.137614679012\\
+14	177.370030581214\\
+15	193.67991845072\\
+16	205.912334352909\\
+17	216.106014271328\\
+18	232.415902140834\\
+19	240.570846075594\\
+20	248.725790010354\\
+21	260.958205912543\\
+22	275.22935779839\\
+23	285.423037716809\\
+24	299.694189602656\\
+25	316.004077472162\\
+26	334.352701325341\\
+27	340.468909276428\\
+28	350.662589194847\\
+29	364.933741080695\\
+30	379.204892966542\\
+};
+\addlegendentry{Tot}
+
+\end{axis}
+\end{tikzpicture}%

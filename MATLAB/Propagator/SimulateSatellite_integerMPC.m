@@ -1,5 +1,5 @@
-function [ eph ] = SimulateSatellite_integerMPC( mjd0, satelliteFilename, ...
-    timestep, duration, prediction_horizon, numControlVariables, ...
+function [ eph ] = SimulateSatellite_integerMPC( mjd0, satelliteFilename, timestep_controller, ...
+    timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant)
 
 
@@ -102,10 +102,10 @@ Y = Y0';
 U = U0;
 
 U_lb = [ -mtqData.maxDipoleMoment .* ones(3,1);...
-        -rwData.maxAcc .* timestep .* ones(4,1); ...
+        -rwData.maxAcc .* timestep_prediction .* ones(4,1); ...
         zeros(numThrusters,1)];
 U_ub = [ mtqData.maxDipoleMoment .* ones(3,1); ...
-    rwData.maxAcc .* timestep .* ones(4,1); ...
+    rwData.maxAcc .* timestep_prediction .* ones(4,1); ...
     ones(numThrusters,1)]; % propulsionData.maxThrust .* 
 
 Y_lb = [zeros(7,1); -rwData.maxVel .*ones(4,1); zeros(numPropellant,1)];
@@ -114,11 +114,11 @@ Y_lb_dotVec = [zeros(7,1); ones(4,1); zeros(numPropellant,1)];
 Y_ub = [zeros(7,1); rwData.maxVel .*ones(4,1); zeros(numPropellant,1)];
 Y_ub_dotVec = [zeros(7,1); ones(4,1); zeros(numPropellant,1)];
 
-for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
+for currStep = 1:(round(duration/timestep_controller)) % -1) % DEBUG
     
-    disp(['Iteration ',num2str(currStep),' of ',num2str(round(duration/timestep))]);
+    disp(['Iteration ',num2str(currStep),' of ',num2str(round(duration/timestep_controller))]);
 
-    thisT = currStep*timestep;
+    thisT = currStep*timestep_controller;
     mjd = missionData.mjd0 + thisT/86400;
         
 %     if currStep == 1 % DEBUG
@@ -187,8 +187,8 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
         zeros(numPropellant,7), LinearizedRHO( ...
             satData.propulsion.thrusters, numThrusters)];
 
-        A_disc = eye(size(A_cont)) + timestep .* A_cont;
-        B_disc = timestep .* B_cont;
+        A_disc = eye(size(A_cont)) + timestep_prediction .* A_cont;
+        B_disc = timestep_prediction .* B_cont;
 
 
 
@@ -248,7 +248,7 @@ for currStep = 1:(round(duration/timestep)) % -1) % DEBUG
     % Implement first optimal control move
     opts = odeset('RelTol',1e-5,'AbsTol',1e-6);
     [t, thisEphY] = ode45( @(t, Y) SatelliteAcceleration(Y, U, ...
-        timestep, mjd, numThrusters, numPropellant), [0; timestep], Y, opts );
+        timestep_controller, mjd, numThrusters, numPropellant), [0; timestep_controller], Y, opts );
     Y = thisEphY(length(thisEphY(:,1)),:);
     
     % Save plant states
