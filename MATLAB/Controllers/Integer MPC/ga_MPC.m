@@ -55,7 +55,7 @@ end
 if simConfig.enablePropulsion
     thrust_weight = propulsionData.power/propulsionData.maxThrust; ...1e3*
     if satelliteConfiguration == 2
-        thrust_weight = 2e8*thrust_weight; % 1e3*
+        thrust_weight = 5e8*thrust_weight; % 1e3* % 
     end
 else
     thrust_weight = 0;

@@ -19,13 +19,15 @@ global satelliteConfiguration
 run(satelliteFilename);
 
 if simConfig.enableQuatRef
-    K_p = 1e2;
+    K_p = 1e1;
+    K_d = 1e1; % 10
 else
     K_p = 0;
 end
-K_d = 1e2; % 1e2;
+
 if simConfig.enableOmegaRef
-    K_dd = 1;
+    K_d = 1e2; % 1e1; % 
+    K_dd = 1; % 1e-1; % 
 else
     K_dd = 0;
 end
@@ -154,6 +156,7 @@ for currStep = 1:(round(duration/timestep))
     domega_rw = RW_NonlinPD( qError_ECI, omegaError, I_mat_sys, ...
     rw_omega, rwData.A_MPinv_mat, rwData.I_mat, rwData.maxAcc, ...
     rwData.maxVel, zeros(3,1), K_p, K_d, K_dd, alphaError );
+
  
     U = [zeros(3,1); domega_rw; zeros(numThrusters,1)];
 

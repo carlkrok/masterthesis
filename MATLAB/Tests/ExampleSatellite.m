@@ -11,11 +11,11 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
-simConfig.enableMTQ = true;
-%simConfig.enableMTQ = false;
+%simConfig.enableMTQ = true;
+simConfig.enableMTQ = false;
 
 simConfig.enablePropulsion = true;
 %simConfig.enablePropulsion = false;
@@ -71,18 +71,20 @@ for stepIter = 0 : numSteps
    stepTimes( stepIter+1 ) = (stepIter * stepLength);
 end
 
+% MPC MTQ and nanofeep 5s * 20 = 100s pred
+% MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
 timestep_controller = 1; 
 timestep_prediction = 1; 
-prediction_horizon = 5; 
-duration = 5; %numSteps*stepLength;
-% eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
-%     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
-%     numThrusters, numPropellant );
-eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
-    timestep_pd, duration, prediction_horizon, numControlVariables, ...
+prediction_horizon = 10; 
+duration = 600; %numSteps*stepLength;
+eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
+    timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
+% eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
+%     timestep_pd, duration, prediction_horizon, numControlVariables, ...
+%     numThrusters, numPropellant );
 
 
 timeVec = eph(:,1);
