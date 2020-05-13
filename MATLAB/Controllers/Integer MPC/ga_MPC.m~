@@ -24,7 +24,7 @@ end
 attitude_eta_weight = 0;
 
 if simConfig.enableOmegaRef
-    omega_weight = 5e9;
+    omega_weight = 1e9;
 else
     omega_weight = 0;
 end
@@ -123,7 +123,7 @@ c = (( chi_0' * H_attitude * B_chi  - chi_ref'* H_attitude * B_chi ));
 D = ( B_chi' * H_attitude * B_chi + W_actuation );
 e = Z_actuation;
 
-options = optimoptions('ga', 'Display', 'off', 'MaxTime', 30); %, ...
+options = optimoptions('ga', 'Display', 'off', 'MaxTime', 5); %, ...
     %'ConstraintTolerance', 1e-6, 'FunctionTolerance', 1e-9, ...
     %'PopulationSize', 500); %, 'PlotFcn', @gaplotbestf);
 

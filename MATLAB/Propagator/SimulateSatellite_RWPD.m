@@ -26,8 +26,8 @@ else
 end
 
 if simConfig.enableOmegaRef
-    K_d = 1e2; % 1e1; % 
-    K_dd = 1; % 1e-1; % 
+    K_d = 1e1; % 1e1; % 
+    K_dd = 1e-1; % 1e-1; % 
 else
     K_dd = 0;
 end

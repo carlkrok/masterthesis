@@ -11,11 +11,11 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-%simConfig.enableRW = true;
-simConfig.enableRW = false;
+simConfig.enableRW = true;
+%simConfig.enableRW = false;
 
-%simConfig.enableMTQ = true;
-simConfig.enableMTQ = false;
+simConfig.enableMTQ = true;
+%simConfig.enableMTQ = false;
 
 simConfig.enablePropulsion = true;
 %simConfig.enablePropulsion = false;
@@ -25,9 +25,9 @@ simConfig.enablePropulsionInertia = true;
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.enableQuatRef = true;
+simConfig.enableQuatRef = false;
 simConfig.referenceQuaternion = [1; 0; 0; 0];
-simConfig.enableOmegaRef = false;
+simConfig.enableOmegaRef = true;
 simConfig.referenceOmega = [0.0125; 0; 0];
 
 
@@ -77,14 +77,14 @@ end
 timestep_pd = 0.1;
 timestep_controller = 1; 
 timestep_prediction = 1; 
-prediction_horizon = 10; 
-duration = 600; %numSteps*stepLength;
-eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
-    timestep_prediction, duration, prediction_horizon, numControlVariables, ...
-    numThrusters, numPropellant );
-% eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
-%     timestep_pd, duration, prediction_horizon, numControlVariables, ...
+prediction_horizon = 3; % 10 
+duration = 10; %numSteps*stepLength;
+% eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
+%     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
 %     numThrusters, numPropellant );
+eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
+    timestep_pd, duration, prediction_horizon, numControlVariables, ...
+    numThrusters, numPropellant );
 
 
 timeVec = eph(:,1);

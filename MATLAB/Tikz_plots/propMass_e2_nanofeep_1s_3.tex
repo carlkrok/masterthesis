@@ -1,0 +1,133 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+\definecolor{mycolor4}{rgb}{0.49400,0.18400,0.55600}%
+\definecolor{mycolor5}{rgb}{0.46600,0.67400,0.18800}%
+\definecolor{mycolor6}{rgb}{0.30100,0.74500,0.93300}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=6.028in,
+height=4.754in,
+at={(1.011in,0.642in)},
+scale only axis,
+xmin=0,
+xmax=10,
+xlabel style={font=\color{white!15!black}},
+xlabel={[ s ]},
+ymin=-0.001,
+ymax=0.006,
+ylabel style={font=\color{white!15!black}},
+ylabel={$\text{[ }\mu\text{ g ]}$},
+axis background/.style={fill=white},
+title style={font=\bfseries},
+title={Propellant Consumption},
+axis x line*=bottom,
+axis y line*=left,
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	0.000679578662440838\\
+2	0.000679578662440838\\
+3	0.000679578662440838\\
+4	0.000679578662440838\\
+5	0.000679578662440838\\
+6	0.000679578662440838\\
+7	0.000679578662440838\\
+8	0.00135915732314695\\
+9	0.00203873598385307\\
+10	0.00271831464455918\\
+};
+\addlegendentry{$\text{T}_\text{1}$}
+
+\addplot [color=mycolor2]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	-1.73472347597681e-12\\
+2	0.000679578658971391\\
+3	0.00135915732141223\\
+4	0.00135915732141223\\
+5	0.00203873598211834\\
+6	0.00271831464282446\\
+7	0.00271831464282446\\
+8	0.00271831464282446\\
+9	0.0033978933052653\\
+10	0.0033978933052653\\
+};
+\addlegendentry{$\text{T}_\text{2}$}
+
+\addplot [color=mycolor3]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	-1.73472347597681e-12\\
+2	-1.73472347597681e-12\\
+3	-1.73472347597681e-12\\
+4	-1.73472347597681e-12\\
+5	-1.73472347597681e-12\\
+6	0.000679578658971391\\
+7	0.000679578658971391\\
+8	0.00135915732141223\\
+9	0.00135915732141223\\
+10	0.00135915732141223\\
+};
+\addlegendentry{$\text{T}_\text{3}$}
+
+\addplot [color=mycolor4]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	0.000679578662440838\\
+2	0.000679578662440838\\
+3	0.000679578662440838\\
+4	0.00135915732314695\\
+5	0.00135915732314695\\
+6	0.00135915732314695\\
+7	0.00135915732314695\\
+8	0.00203873598385307\\
+9	0.00271831464455918\\
+10	0.00271831464455918\\
+};
+\addlegendentry{$\text{T}_\text{4}$}
+
+\addplot [color=mycolor5]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	-1.73472347597681e-12\\
+2	0.000679578658971391\\
+3	0.000679578658971391\\
+4	0.00135915732141223\\
+5	0.00135915732141223\\
+6	0.00203873598211834\\
+7	0.00271831464282446\\
+8	0.00271831464282446\\
+9	0.00271831464282446\\
+10	0.00271831464282446\\
+};
+\addlegendentry{$\text{T}_\text{5}$}
+
+\addplot [color=mycolor6]
+  table[row sep=crcr]{%
+0	-1.73472347597681e-12\\
+1	0.000679578662440838\\
+2	0.00135915732314695\\
+3	0.00203873598385307\\
+4	0.00203873598385307\\
+5	0.00271831464455918\\
+6	0.00339789330700002\\
+7	0.00407747196770614\\
+8	0.00475705062841225\\
+9	0.00475705062841225\\
+10	0.00543662929085309\\
+};
+\addlegendentry{$\text{T}_\text{6}$}
+
+\end{axis}
+\end{tikzpicture}%
