@@ -11,8 +11,8 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -25,9 +25,9 @@ simConfig.enablePropulsionInertia = true;
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.enableQuatRef = false;
+simConfig.enableQuatRef = true;
 simConfig.referenceQuaternion = [1; 0; 0; 0];
-simConfig.enableOmegaRef = true;
+simConfig.enableOmegaRef = false;
 simConfig.referenceOmega = [0.0125; 0; 0];
 
 
@@ -75,16 +75,16 @@ end
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; 
-timestep_prediction = 1; 
-prediction_horizon = 3; % 10 
-duration = 10; %numSteps*stepLength;
-% eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
-%     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
-%     numThrusters, numPropellant );
-eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
-    timestep_pd, duration, prediction_horizon, numControlVariables, ...
+timestep_controller = 1; % 2; 
+timestep_prediction = 1; % 2; 
+prediction_horizon = 10;% 10; % 10 
+duration = 90; %numSteps*stepLength;
+eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
+    timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
+% eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
+%     timestep_pd, duration, prediction_horizon, numControlVariables, ...
+%     numThrusters, numPropellant );
 
 
 timeVec = eph(:,1);
@@ -191,3 +191,7 @@ PlotDisturbanceTorqueNorm ( plotData.disturbance_torques_norm, ...
     plotData.grav_torque_norm);
 
 PlotOmegaDot( plotData.wdot_sat_body );
+
+%%
+
+save('waterjet_mtq_attitude_3')

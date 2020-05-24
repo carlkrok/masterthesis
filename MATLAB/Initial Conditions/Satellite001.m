@@ -227,10 +227,10 @@ sat.rw.maxMomentum = 20*10^-3;
 sat.rw.maxTorque = 3.2*10^-3;
 sat.rw.mass = 0.137;
 
-sat.rw.maxPower = 3;
+sat.rw.maxPower = 3.25;
 sat.rw.idlePower = 0.045;
 
-sat.rw.w = zeros(4,1); % Initial angular velocity values for RWs 
+sat.rw.w = sat.rw.maxVel .* [1;1;-1;-1]; % zeros(4,1); % Initial angular velocity values for RWs 
 
 %sat_reaction_wheels based on nanoavionics NA-4RWO-GO-R8, modelled as solid disk 
 sat.rw.radius = sqrt( ( sat.rw.maxMomentum ) / ( sat.rw.maxVel * 0.5 * sat.rw.mass ));
