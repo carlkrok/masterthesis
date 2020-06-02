@@ -11,8 +11,8 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -33,7 +33,7 @@ simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
 simConfig.secondReferenceQuaternionTime = 30;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 60;
+simConfig.thirdReferenceQuaternionTime = 120;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -89,7 +89,7 @@ end
 timestep_pd = 0.1;
 timestep_controller = 1; % 2; 
 timestep_prediction = 1; % 2; 
-prediction_horizon = 4;% 10; % 10 
+prediction_horizon = 10;% 10; % 10 
 duration = 90; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
@@ -222,4 +222,4 @@ PlotOmegaDot( plotData.wdot_sat_body );
 
 %%
 
-save('new_pred_time_nfeep_1')
+%save('e1')

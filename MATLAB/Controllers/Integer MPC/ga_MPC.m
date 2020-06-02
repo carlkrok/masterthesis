@@ -32,9 +32,9 @@ if simConfig.enableRW
     rw_actuation_weights = rwData.idlePower + 1/rwData.efficiency .* ...
     rwData.I_mat * (rw_vel_ref .* ones(4,1)); 
     if satelliteConfiguration == 2
-        rw_momentum_weight = 10; % 1e-15; % 100
+        rw_momentum_weight = 1e3; % 1e-15; % 100
     elseif satelliteConfiguration == 1 
-        rw_momentum_weight = 10; % 1e5; % 100
+        rw_momentum_weight = 1e3; % 1e5; % 100
     end
     if simConfig.enableOmegaRef && satelliteConfiguration == 2
         rw_momentum_weight = 100;
@@ -55,7 +55,7 @@ end
 if simConfig.enablePropulsion
     thrust_weight = propulsionData.power/propulsionData.maxThrust; ...1e3*
     if satelliteConfiguration == 2
-        thrust_weight = 1e14*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e13*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
 else
     thrust_weight = 0;

@@ -75,9 +75,11 @@ if simConfig.enablePropulsion
         error("Satellite not configured with Propulsion system")
     end
     propulsionData.maxThrust = sat.propulsion.maxThrust;
+    propulsionData.thrustRange = sat.propulsion.thrustRange;
     propulsionData.power = sat.propulsion.power;
 else
     propulsionData.minThrust = 0;
+    propulsionData.thrustRange = 0;
     propulsionData.maxThrust = 0;
     propulsionData.power = 0;
 end
@@ -104,10 +106,10 @@ U = U0;
 
 U_lb = [ -mtqData.maxDipoleMoment .* ones(3,1);...
         -rwData.maxAcc .* ones(4,1); ...
-        zeros(numThrusters,1)];
+        ones(numThrusters,1)];
 U_ub = [ mtqData.maxDipoleMoment .* ones(3,1); ...
     rwData.maxAcc .* ones(4,1); ...
-    ones(numThrusters,1)]; % propulsionData.maxThrust .* 
+    ones(numThrusters,1).*length(propulsionData.thrustRange)]; % propulsionData.maxThrust .* 
 
 Y_lb = [zeros(7,1); -rwData.maxVel .*ones(4,1); zeros(numPropellant,1)];
 Y_lb_dotVec = [zeros(7,1); ones(4,1); zeros(numPropellant,1)];
@@ -264,7 +266,7 @@ for currStep = 1:(round(duration/timestep_controller)) % -1) % DEBUG
         Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, chi_ref, rw_vel_ref);
 
 
-    U(8:8+numThrusters-1) = propulsionData.maxThrust .* U(8:8+numThrusters-1);
+    U(8:8+numThrusters-1) = propulsionData.thrustRange(U(8:8+numThrusters-1));
     
     
     for uIter = 1:3
