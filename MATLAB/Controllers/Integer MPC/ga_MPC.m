@@ -1,6 +1,6 @@
 function U = ga_MPC(Y0, A_disc,B_disc,prediction_horizon, ...
     numControlVariables, numThrusters, numPropellant, U_lb, U_ub, ...
-    Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, qRef, omegaRef)
+    Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, chi_ref, rw_vel_ref)
 
 global mtqData
 global rwData
@@ -8,10 +8,8 @@ global propulsionData
 global simConfig
 global satelliteConfiguration
 
-rw_vel_ref = 1000*2*pi/60;
+
 rw_vel = Y0(8:11);
-chi_ref = repmat([0;qRef(2:4);omegaRef;rw_vel_ref.*ones(4,1); ...
-    zeros(numPropellant,1)],prediction_horizon,1);
 
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
     attitude_weight = 1e15; % 1e8; % 1e15; % 1e9;

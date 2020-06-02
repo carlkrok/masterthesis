@@ -98,7 +98,7 @@ F_prop_cmd = PROP_Cmd;
     satData.propulsion.thrusters, F_prop_cmd );
 
 PROP_f_ECI = rotMat_BodyToECI * PROP_f_body;
-a_tot = a_tot + PROP_f_ECI ./ tot_mass;
+a_tot = a_tot + PROP_f_ECI ./ tot_mass - (1/tot_mass)*sum(PROP_mass_dot)*v_ECI;
     
 
 
@@ -152,8 +152,8 @@ a_grav = Gravity_Acc( missionData.mu, r_ECI );
 a_tot = a_tot + a_grav;
 
 if simConfig.enableJ2
-    a_j2 = J2_Acc( r_ECI, missionData.mu, missionData.J2, missionData.Re);
-    a_tot = a_tot + a_j2;
+    f_j2 = J2_Force( r_ECI, missionData.mu, missionData.J2, missionData.Re);
+    a_tot = a_tot + f_j2 ./ tot_mass;
 end
 
 if simConfig.enableGravityGradient

@@ -1,4 +1,4 @@
-function PlotEulerAngles( quaternions, timeVec )
+function PlotEulerAngles( quaternions, timeVec, refTime, xRef, yRef, zRef )
 
 numSteps = length(quaternions(:,1));
 
@@ -19,17 +19,17 @@ grid on
 x = timeVec;
 tiledlayout(3,1)
 ax1 = nexttile;
-plot(x, xAxisRot.*(180/pi))
+plot(x, xAxisRot.*(180/pi),refTime, xRef.*(180/pi))
 title('Euler angle X-Axis orientation')
 ylabel('[deg]')
 xlabel('[s]')
 ax2 = nexttile;
-plot(x, yAxisRot.*(180/pi))
+plot(x, yAxisRot.*(180/pi),refTime, yRef.*(180/pi))
 title('Euler angle Y-Axis orientation')
 ylabel('[deg]')
 xlabel('[s]')
 ax3 = nexttile;
-plot(x, zAxisRot.*(180/pi))
+plot(x, zAxisRot.*(180/pi),refTime, zRef.*(180/pi))
 title('Euler angle Z-Axis orientation')
 ylabel('[deg]')
 xlabel('[s]')

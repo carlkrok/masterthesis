@@ -40,6 +40,8 @@ U0 = zeros(numControlVariables,1);
 rwData.A_mat = sat.rw.A_mat;
 rwData.A_MPinv_mat = sat.rw.A_MPinv_mat;
 rwData.I_mat = sat.rw.I_mat;
+rw_vel_ref = 1000*2*pi/60;
+
 if simConfig.enableRW
     if not( sat.rw.exists )
         error("Satellite not configured with Reaction Wheels")
@@ -91,7 +93,6 @@ missionData.mjd0 = mjd0;
 missionData.mu = MU_EARTH;
 missionData.Re = R_EARTH;
 missionData.J2 = J2_EARTH;
-
 
 %%
 
@@ -193,20 +194,74 @@ for currStep = 1:(round(duration/timestep_controller)) % -1) % DEBUG
 
 
         Y_simple = [Y(7:17),Y(24:24+numPropellant-1)]';
+        
+        
+        
+        
+        
+        predT = thisT + timestep_prediction;
+        
+        qRef = simConfig.firstReferenceQuaternion;
+        omegaRef = simConfig.firstReferenceOmega;
+
+        if predT > simConfig.secondReferenceQuaternionTime
+            qRef = simConfig.secondReferenceQuaternion;
+        end
+        if predT > simConfig.thirdReferenceQuaternionTime
+            qRef = simConfig.thirdReferenceQuaternion;
+        end
+
+        if predT > simConfig.secondReferenceOmegaTime
+            omegaRef = simConfig.secondReferenceOmega;
+        end
+        if predT > simConfig.thirdReferenceOmegaTime
+            omegaRef = simConfig.thirdReferenceOmega;
+        end
+
+        chi_ref = [0;qRef(2:4);omegaRef;rw_vel_ref.*ones(4,1); ...
+            zeros(numPropellant,1)];
+            
+        for chiIter = 2:prediction_horizon
+            
+            predT = thisT + timestep_prediction*chiIter;
+            
+            qRef = simConfig.firstReferenceQuaternion;
+            omegaRef = simConfig.firstReferenceOmega;
+            
+            if predT > simConfig.secondReferenceQuaternionTime
+                qRef = simConfig.secondReferenceQuaternion;
+            end
+            if predT > simConfig.thirdReferenceQuaternionTime
+                qRef = simConfig.thirdReferenceQuaternion;
+            end
+            
+            if predT > simConfig.secondReferenceOmegaTime
+                omegaRef = simConfig.secondReferenceOmega;
+            end
+            if predT > simConfig.thirdReferenceOmegaTime
+                omegaRef = simConfig.thirdReferenceOmega;
+            end
+        
+            chi_ref = [chi_ref;[0;qRef(2:4);omegaRef;rw_vel_ref.*ones(4,1); ...
+                zeros(numPropellant,1)]];
+            
+        end
+        
+        
     
 %         Uall = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, ...
 %             numControlVariables, numThrusters, U_lb, U_ub, ...
-%             Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-%             simConfig.referenceQuaternion, simConfig.referenceOmega);
+%             Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, chi_ref, rw_vel_ref);
 %         
 %     end
 %     
 %     U = Uall(1+currStep*13:13+currStep*13);
     
+    
+
     U = ga_MPC(Y_simple, A_disc,B_disc,prediction_horizon, ...
         numControlVariables, numThrusters, numPropellant, U_lb, U_ub, ...
-        Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, ...
-        simConfig.referenceQuaternion, simConfig.referenceOmega);
+        Y_lb, Y_ub, Y_lb_dotVec, Y_ub_dotVec, chi_ref, rw_vel_ref);
 
 
     U(8:8+numThrusters-1) = propulsionData.maxThrust .* U(8:8+numThrusters-1);

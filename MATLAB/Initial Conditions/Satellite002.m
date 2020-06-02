@@ -18,7 +18,7 @@ sat.constr.body_boundaries = [0, sat.constr.dim_x; ...
 
 
 %% Propulsion
-% Based on water jet propulsion
+% Based on water jet propulsion AURORA
 
 sat.propulsion.exists = true;
 propRho0 = 10^3;
@@ -28,6 +28,8 @@ sat.propulsion.maxThrust = 2 * 10^-3;
 sat.propulsion.power = 5; 
 
 % Thruster 1 controlling negative Y-axis spin
+sat.propulsion.thrusters(1).thrustRange = [0.1; 0.25; 0.5; 0.75; 1; ...
+    1.25; 1.5; 1.75; 2] .* 10^-3;
 sat.propulsion.thrusters(1).isp = std_isp;
 sat.propulsion.thrusters(1).structureDim = ...
     [sat.constr.dim_x/2-0.04, sat.constr.dim_x/2+0.04; ...
@@ -237,7 +239,7 @@ sat.constr.surfaceCenterVectorsNormalVectorsAreas = [ ...
 %% Satellite initial condition
 
 % Initial orientation quaternion and angular velocity
-sat.initCond.q_ECI = EulerToQuaternion(pi/3,pi/8,-pi/5); % [1; 0; 0; 0]; % (0,0,0); % 
+sat.initCond.q_ECI = [1; 0; 0; 0]; % EulerToQuaternion(pi/3,pi/8,-pi/5); % 
 sat.initCond.w_body = [0; 0; 0];
 % Initial orbit parameters
 sat.initCond.orb_T = 45;
