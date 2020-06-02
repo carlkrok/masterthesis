@@ -33,7 +33,7 @@ simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
 simConfig.secondReferenceQuaternionTime = 30;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 120;
+simConfig.thirdReferenceQuaternionTime = 90;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -90,7 +90,7 @@ timestep_pd = 0.1;
 timestep_controller = 1; % 2; 
 timestep_prediction = 1; % 2; 
 prediction_horizon = 10;% 10; % 10 
-duration = 90; %numSteps*stepLength;
+duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
@@ -212,11 +212,11 @@ PlotPropForce( plotData.prop_f );
 
 PlotMTQDipole( plotData.mtq_m )
 
-PlotCosts(plotData.cost_attitude,plotData.cost_actuation,plotData.cost_rw_momentum);
+% PlotCosts(plotData.cost_attitude,plotData.cost_actuation,plotData.cost_rw_momentum);
 
-PlotDisturbanceTorqueNorm ( plotData.disturbance_torques_norm, ...
-    plotData.srp_torque_norm, plotData.drag_torque_norm, ...
-    plotData.grav_torque_norm);
+% PlotDisturbanceTorqueNorm ( plotData.disturbance_torques_norm, ...
+%     plotData.srp_torque_norm, plotData.drag_torque_norm, ...
+%     plotData.grav_torque_norm);
 
 PlotOmegaDot( plotData.wdot_sat_body );
 

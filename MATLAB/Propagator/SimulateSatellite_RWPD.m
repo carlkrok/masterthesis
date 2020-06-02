@@ -138,14 +138,32 @@ for currStep = 1:(round(duration/timestep))
     % Error variables describe rotation from current attitude to reference
     % attitude.
     
+      
+    qRef = simConfig.firstReferenceQuaternion;
+    omegaRef = simConfig.firstReferenceOmega;
+
+    if thisT > simConfig.secondReferenceQuaternionTime
+        qRef = simConfig.secondReferenceQuaternion;
+    end
+    if thisT > simConfig.thirdReferenceQuaternionTime
+        qRef = simConfig.thirdReferenceQuaternion;
+    end
+
+    if thisT > simConfig.secondReferenceOmegaTime
+        omegaRef = simConfig.secondReferenceOmega;
+    end
+    if thisT > simConfig.thirdReferenceOmegaTime
+        omegaRef = simConfig.thirdReferenceOmega;
+    end
+    
     if simConfig.enableQuatRef
-        qError_ECI = QuaternionError(simConfig.referenceQuaternion, q_ECI);
+        qError_ECI = QuaternionError(qRef, q_ECI);
     else
         qError_ECI = [1;0;0;0];
     end
     
     if simConfig.enableOmegaRef
-        omegaError = omega_body - simConfig.referenceOmega;
+        omegaError = omega_body - omegaRef;
         alphaError = omega_body - omega_prev;
         omega_prev = omega_body;
     else

@@ -1,9 +1,0 @@
-function [wdot, t_body] = RW_Torque( wdot_sat_body, appliedTorque, ...
-    rw_I_mat, w_rw_w, A_mat, A_MPinv_mat, RotMat_structToBody )
-
-wdot = rw_I_mat \ appliedTorque ...
-    - A_MPinv_mat * RotMat_structToBody' * wdot_sat_body ...
-    + A_MPinv_mat * RotMat_structToBody' * wdot_body_body;
-
-
-end
