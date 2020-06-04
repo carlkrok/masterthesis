@@ -1,8 +1,8 @@
-function PlotQuaternionError( qRef, quaternions, timeVec)
+function PlotQuaternionError( qRefVec, quaternions, timeVec)
 
 qError = zeros(length(quaternions), 4);
 for quatIter = 1:length(quaternions(:,1))
-    qError(quatIter,:) = QuaternionProduct( QuaternionInverse( qRef ), quaternions(quatIter,:)' );
+    qError(quatIter,:) = QuaternionProduct( QuaternionInverse( qRefVec(:, quatIter) ), quaternions(quatIter,:)' );
 end
 
 t = timeVec;

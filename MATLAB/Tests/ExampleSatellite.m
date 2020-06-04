@@ -158,7 +158,11 @@ zRef = [zeros(1,simConfig.secondReferenceQuaternionTime+1), ...
 quaternions = eph(:,8:11);
 PlotEulerAngles( quaternions, timeVec, refTime, xRef, yRef, zRef );
 
-% PlotQuaternionError( simConfig.referenceQuaternion, quaternions, timeVec)
+quatRef = [simConfig.firstReferenceQuaternion * ones(1,simConfig.secondReferenceQuaternionTime+1), ...
+    simConfig.secondReferenceQuaternion * ones(1,simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime), ...
+    simConfig.thirdReferenceQuaternion * ones(1,duration-simConfig.thirdReferenceQuaternionTime)];
+
+PlotQuaternionError( quatRef, quaternions, timeVec)
 
 
 %%
