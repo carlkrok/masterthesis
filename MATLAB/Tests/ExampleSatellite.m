@@ -31,9 +31,9 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 250;
+simConfig.secondReferenceQuaternionTime = 500;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 1000;
+simConfig.thirdReferenceQuaternionTime = 1500;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -90,7 +90,7 @@ timestep_pd = 0.1;
 timestep_controller = 5; % 2; 
 timestep_prediction = 5; % 2; 
 prediction_horizon = 60;% 10; % 10 
-duration = 1750; %numSteps*stepLength;
+duration = 2500; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
