@@ -53,7 +53,7 @@ if simConfig.enableRW
     rwData.idlePower = sat.rw.idlePower;
 else
     rwData.maxAcc = 0;
-    rwData.maxVel = sat.rw.maxVel;
+    rwData.maxVel = 0;
     rwData.maxVelocity = sat.rw.maxVel;
     rwData.efficiency = 1;
     rwData.idlePower = 0;

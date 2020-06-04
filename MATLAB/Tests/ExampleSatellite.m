@@ -4,7 +4,7 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 2;
+satelliteConfiguration = 1;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
@@ -31,9 +31,9 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 30;
+simConfig.secondReferenceQuaternionTime = 250;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 90;
+simConfig.thirdReferenceQuaternionTime = 1000;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -87,10 +87,10 @@ end
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; % 2; 
-timestep_prediction = 1; % 2; 
-prediction_horizon = 10;% 10; % 10 
-duration = 150; %numSteps*stepLength;
+timestep_controller = 5; % 2; 
+timestep_prediction = 5; % 2; 
+prediction_horizon = 60;% 10; % 10 
+duration = 1750; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
