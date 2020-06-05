@@ -17,10 +17,10 @@ simConfig.enableRW = false;
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-simConfig.enablePropulsion = true;
-%simConfig.enablePropulsion = false;
-simConfig.enablePropulsionInertia = true;
-%simConfig.enablePropulsionInertia = false;
+%simConfig.enablePropulsion = true;
+simConfig.enablePropulsion = false;
+%simConfig.enablePropulsionInertia = true;
+simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
@@ -87,9 +87,9 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 5; % 2; 
-timestep_prediction = 5; % 2; 
-prediction_horizon = 100;% 10; % 10 
+timestep_controller = 5; % 2;
+timestep_prediction = 5; % 2;
+prediction_horizon = 100;% 10; % 10
 duration = 2500; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
@@ -107,10 +107,10 @@ timeVec = eph(:,1);
 % includeEarth = false;
 % xyz = eph(:,2:4);
 % PlotOrbit( xyz, includeEarth );
-% 
-% 
+%
+%
 % %%
-% 
+%
 % figure
 % hold on
 % grid on
@@ -118,7 +118,7 @@ timeVec = eph(:,1);
 % plot(1:length(omega_ref_norm), omega_ref_norm,'g')
 % plot(1:length(omega_actual_norm), omega_actual_norm,'b')
 % hold off
-% 
+%
 % figure
 % hold on
 % grid on
@@ -136,7 +136,7 @@ timeVec = eph(:,1);
 % t = eph(:,1);
 % PlotOrbitRadiusDeviation( t, xyz, isCircular );
 
-   
+
 %%
 
 refTime = [0:simConfig.secondReferenceQuaternionTime, ...
