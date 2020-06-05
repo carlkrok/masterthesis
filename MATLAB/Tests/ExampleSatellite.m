@@ -89,7 +89,7 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 5; % 2;
 timestep_prediction = 5; % 2;
-prediction_horizon = 100;% 10; % 10
+prediction_horizon = 40;% 10; % 10
 duration = 2500; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
