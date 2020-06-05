@@ -4,15 +4,15 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 2;
+satelliteConfiguration = 1;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -31,9 +31,9 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 30;
+simConfig.secondReferenceQuaternionTime = 500;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 90;
+simConfig.thirdReferenceQuaternionTime = 1500;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -87,9 +87,9 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; % 2; 
-timestep_prediction = 1; % 2; 
-prediction_horizon = 4;% 10; % 10 
+timestep_controller = 1; % 2;
+timestep_prediction = 1; % 2;
+prediction_horizon = 4;% 10; % 10
 duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
@@ -107,10 +107,10 @@ timeVec = eph(:,1);
 % includeEarth = false;
 % xyz = eph(:,2:4);
 % PlotOrbit( xyz, includeEarth );
-% 
-% 
+%
+%
 % %%
-% 
+%
 % figure
 % hold on
 % grid on
@@ -118,7 +118,7 @@ timeVec = eph(:,1);
 % plot(1:length(omega_ref_norm), omega_ref_norm,'g')
 % plot(1:length(omega_actual_norm), omega_actual_norm,'b')
 % hold off
-% 
+%
 % figure
 % hold on
 % grid on
@@ -136,7 +136,7 @@ timeVec = eph(:,1);
 % t = eph(:,1);
 % PlotOrbitRadiusDeviation( t, xyz, isCircular );
 
-   
+
 %%
 
 refTime = [0:simConfig.secondReferenceQuaternionTime, ...
