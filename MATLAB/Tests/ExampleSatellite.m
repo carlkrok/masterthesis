@@ -17,9 +17,9 @@ simConfig.enableRW = true;
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
+simConfig.enablePropulsion = true;
 simConfig.enablePropulsion = false;
-%simConfig.enablePropulsionInertia = true;
+simConfig.enablePropulsionInertia = true;
 simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
@@ -89,7 +89,7 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 1; % 2; 
 timestep_prediction = 1; % 2; 
-prediction_horizon = 5;% 10; % 10 
+prediction_horizon = 4;% 10; % 10 
 duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...

@@ -29,12 +29,15 @@ end
 
 
 if simConfig.enableRW
-    rw_actuation_weights = 100*(rwData.idlePower + 1/rwData.efficiency .* ...
+    % rw_actuation_weights = 100*(rwData.idlePower + 1/rwData.efficiency .* ...
+    rw_actuation_weights = 1e5*(rwData.idlePower + 1/rwData.efficiency .* ...
     rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
     if satelliteConfiguration == 2
-        rw_momentum_weight = 1e3; % 1e-15; % 100
+        rw_momentum_weight = 1e5;
+        % rw_momentum_weight = 1e3; % 1e-15; % 100
     elseif satelliteConfiguration == 1 
-        rw_momentum_weight = 1e3; % 1e5; % 100
+        rw_momentum_weight = 1e5;
+        % rw_momentum_weight = 1e3; % 1e5; % 100
     end
     if simConfig.enableOmegaRef && satelliteConfiguration == 2
         rw_momentum_weight = 100;
