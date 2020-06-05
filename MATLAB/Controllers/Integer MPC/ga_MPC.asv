@@ -22,7 +22,7 @@ end
 attitude_eta_weight = 0;
 
 if simConfig.enableOmegaRef
-    omega_weight = 1e18; % 1e15
+    omega_weight = 1e15;
 else
     omega_weight = 0;
 end
