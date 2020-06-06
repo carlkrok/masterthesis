@@ -17,10 +17,10 @@ simConfig.enableRW = true;
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
-%simConfig.enablePropulsionInertia = true;
-simConfig.enablePropulsionInertia = false;
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
+simConfig.enablePropulsionInertia = true;
+%simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
@@ -87,9 +87,9 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; % 2; 
-timestep_prediction = 1; % 2; 
-prediction_horizon = 2;% 10; % 10 
+timestep_controller = 0.5; % 2; 
+timestep_prediction = 0.5; % 2; 
+prediction_horizon = 6;% 10; % 10 
 duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
