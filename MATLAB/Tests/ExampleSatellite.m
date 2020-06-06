@@ -11,8 +11,8 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-simConfig.enableRW = true;
-%simConfig.enableRW = false;
+%simConfig.enableRW = true;
+simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -89,7 +89,7 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
-prediction_horizon = 3;% 10; % 10
+prediction_horizon = 15;% 10; % 10
 duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
@@ -163,9 +163,9 @@ quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenc
     simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_controller), ...
     simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_controller)];
 
-% quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
-%     simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
-%     simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
+quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
+    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
+    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
 
 
 PlotQuaternionError( quatRef, quaternions, timeVec)

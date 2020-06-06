@@ -22,7 +22,7 @@ end
 attitude_eta_weight = 0;
 
 if simConfig.enableOmegaRef
-    omega_weight = 1e18; % 1e15
+    omega_weight = 1e15; % 1e15
 else
     omega_weight = 0;
 end
@@ -40,11 +40,11 @@ if simConfig.enableRW
         % rw_momentum_weight = 1e3; % 1e5; % 100
     end
     if simConfig.enableOmegaRef && satelliteConfiguration == 2
-        rw_momentum_weight = 1e6;
-%         rw_actuation_weights = 1e6*(rwData.idlePower + 1/rwData.efficiency .* ...
-%             rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
+        rw_momentum_weight = 5e5;
+        rw_actuation_weights = 1e8*(rwData.idlePower + 1/rwData.efficiency .* ...
+            rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
     elseif simConfig.enableOmegaRef && satelliteConfiguration == 1 
-        rw_momentum_weight = 1e6; % 1e4; % 100
+        rw_momentum_weight = 1e4; % 1e4; % 100
 %         rw_actuation_weights = 1e6*(rwData.idlePower + 1/rwData.efficiency .* ...
 %             rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
     end
@@ -55,6 +55,20 @@ end
 
 if simConfig.enableMTQ
     mtq_weight = mtqData.powerFactor;
+    
+%     if satelliteConfiguration == 2 && simConfig.enableOmegaRef
+%         mtq_weight = 1e12*mtq_weight; 
+%     end
+        
+    if satelliteConfiguration == 1 && simConfig.enableOmegaRef
+        mtq_weight = 1e3*mtq_weight; 
+    end
+    
+%     if satelliteConfiguration == 2 && simConfig.enableQuatRef
+%         mtq_weight = 1e14*mtq_weight; 
+%     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
+%         mtq_weight = 1e9*mtq_weight; 
+%     end
 else
     mtq_weight = 0;
 end
@@ -62,15 +76,15 @@ end
 if simConfig.enablePropulsion
     thrust_weight = propulsionData.power/propulsionData.maxThrust; ...1e3*
     if satelliteConfiguration == 2 && simConfig.enableOmegaRef
-        thrust_weight = 1e14*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e12*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     elseif satelliteConfiguration == 1 && simConfig.enableOmegaRef
-        thrust_weight = 1e0*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
     
     if satelliteConfiguration == 2 && simConfig.enableQuatRef
         thrust_weight = 1e14*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-        thrust_weight = 1e0*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
 else
     thrust_weight = 0;
