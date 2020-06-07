@@ -17,10 +17,10 @@ simConfig.enableRW = true;
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-simConfig.enablePropulsion = true;
-%simConfig.enablePropulsion = false;
-simConfig.enablePropulsionInertia = true;
-%simConfig.enablePropulsionInertia = false;
+%simConfig.enablePropulsion = true;
+simConfig.enablePropulsion = false;
+%simConfig.enablePropulsionInertia = true;
+simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
@@ -29,17 +29,17 @@ eulerThird = -pi/5;
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.enableQuatRef = true;
+simConfig.enableQuatRef = false;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
 simConfig.secondReferenceQuaternionTime = 30;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 90;
+simConfig.thirdReferenceQuaternionTime = 180;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
-simConfig.enableOmegaRef = false;
+simConfig.enableOmegaRef = true;
 simConfig.firstReferenceOmega = [0; 0; 0];
 simConfig.secondReferenceOmegaTime = 30;
 simConfig.secondReferenceOmega = [0.0125; 0; 0];
-simConfig.thirdReferenceOmegaTime = 90;
+simConfig.thirdReferenceOmegaTime = 180;
 simConfig.thirdReferenceOmega = [0; 0; 0];
 
 
@@ -87,10 +87,10 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; % 2; 
-timestep_prediction = 1; % 2; 
-prediction_horizon = 4;% 10; % 10 
-duration = 150; %numSteps*stepLength;
+timestep_controller = 1; % 2;
+timestep_prediction = 1; % 2;
+prediction_horizon = 2;% 10; % 10
+duration = 330; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
@@ -107,10 +107,10 @@ timeVec = eph(:,1);
 % includeEarth = false;
 % xyz = eph(:,2:4);
 % PlotOrbit( xyz, includeEarth );
-% 
-% 
+%
+%
 % %%
-% 
+%
 % figure
 % hold on
 % grid on
@@ -118,7 +118,7 @@ timeVec = eph(:,1);
 % plot(1:length(omega_ref_norm), omega_ref_norm,'g')
 % plot(1:length(omega_actual_norm), omega_actual_norm,'b')
 % hold off
-% 
+%
 % figure
 % hold on
 % grid on
@@ -136,7 +136,7 @@ timeVec = eph(:,1);
 % t = eph(:,1);
 % PlotOrbitRadiusDeviation( t, xyz, isCircular );
 
-   
+
 %%
 
 refTime = [0:simConfig.secondReferenceQuaternionTime, ...
@@ -158,9 +158,15 @@ zRef = [zeros(1,simConfig.secondReferenceQuaternionTime+1), ...
 quaternions = eph(:,8:11);
 PlotEulerAngles( quaternions, timeVec, refTime, xRef, yRef, zRef );
 
-quatRef = [simConfig.firstReferenceQuaternion * ones(1,simConfig.secondReferenceQuaternionTime+1), ...
-    simConfig.secondReferenceQuaternion * ones(1,simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime), ...
-    simConfig.thirdReferenceQuaternion * ones(1,duration-simConfig.thirdReferenceQuaternionTime)];
+
+quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_controller)+1), ...
+    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_controller), ...
+    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_controller)];
+
+% quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
+%     simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
+%     simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
+
 
 PlotQuaternionError( quatRef, quaternions, timeVec)
 
@@ -179,9 +185,17 @@ end
 
 %%
 
+omegaRefTime = [0:simConfig.secondReferenceOmegaTime, ...
+    simConfig.secondReferenceOmegaTime:simConfig.thirdReferenceOmegaTime, ...
+    simConfig.thirdReferenceOmegaTime:duration];
+
+omegaRef = [simConfig.firstReferenceOmega * ones(1,(simConfig.secondReferenceOmegaTime/timestep_controller)+1), ...
+    simConfig.secondReferenceOmega * ones(1,(simConfig.thirdReferenceOmegaTime-simConfig.secondReferenceOmegaTime+1)/timestep_controller), ...
+    simConfig.thirdReferenceOmega * ones(1,(duration-simConfig.thirdReferenceOmegaTime+1)/timestep_controller)];
+
 
 omega = eph(:,12:14);
-PlotRotRate( omega, timeVec )
+PlotRotRate( omega, timeVec, omegaRefTime, omegaRef )
 
 
 %%

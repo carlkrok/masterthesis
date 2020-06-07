@@ -11,8 +11,8 @@ simConfig.enableDrag = true;
 simConfig.enableSRP = true;
 simConfig.enableGravityGradient = true;
 
-%simConfig.enableRW = true;
-simConfig.enableRW = false;
+simConfig.enableRW = true;
+%simConfig.enableRW = false;
 
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
@@ -29,13 +29,13 @@ eulerThird = -pi/5;
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.enableQuatRef = false;
+simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 300;
+simConfig.secondReferenceQuaternionTime = 30;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 900;
+simConfig.thirdReferenceQuaternionTime = 90;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
-simConfig.enableOmegaRef = true;
+simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
 simConfig.secondReferenceOmegaTime = 30;
 simConfig.secondReferenceOmega = [0.0125; 0; 0];
@@ -87,10 +87,10 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 1; % 2;
-timestep_prediction = 1; % 2;
-prediction_horizon = 50;% 10; % 10
-duration = 1500; %numSteps*stepLength;
+timestep_controller = 0.5; % 2; 
+timestep_prediction = 0.5; % 2; 
+prediction_horizon = 6;% 10; % 10 
+duration = 150; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
@@ -107,10 +107,10 @@ timeVec = eph(:,1);
 % includeEarth = false;
 % xyz = eph(:,2:4);
 % PlotOrbit( xyz, includeEarth );
-%
-%
+% 
+% 
 % %%
-%
+% 
 % figure
 % hold on
 % grid on
@@ -118,7 +118,7 @@ timeVec = eph(:,1);
 % plot(1:length(omega_ref_norm), omega_ref_norm,'g')
 % plot(1:length(omega_actual_norm), omega_actual_norm,'b')
 % hold off
-%
+% 
 % figure
 % hold on
 % grid on
@@ -136,7 +136,7 @@ timeVec = eph(:,1);
 % t = eph(:,1);
 % PlotOrbitRadiusDeviation( t, xyz, isCircular );
 
-
+   
 %%
 
 refTime = [0:simConfig.secondReferenceQuaternionTime, ...
@@ -158,15 +158,9 @@ zRef = [zeros(1,simConfig.secondReferenceQuaternionTime+1), ...
 quaternions = eph(:,8:11);
 PlotEulerAngles( quaternions, timeVec, refTime, xRef, yRef, zRef );
 
-
-quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_controller)+1), ...
-    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_controller), ...
-    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_controller)];
-
-quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
-    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
-    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
-
+quatRef = [simConfig.firstReferenceQuaternion * ones(1,simConfig.secondReferenceQuaternionTime+1), ...
+    simConfig.secondReferenceQuaternion * ones(1,simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime), ...
+    simConfig.thirdReferenceQuaternion * ones(1,duration-simConfig.thirdReferenceQuaternionTime)];
 
 PlotQuaternionError( quatRef, quaternions, timeVec)
 
