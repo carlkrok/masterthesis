@@ -17,10 +17,10 @@ simConfig.enableRW = true;
 simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
-%simConfig.enablePropulsionInertia = true;
-simConfig.enablePropulsionInertia = false;
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
+simConfig.enablePropulsionInertia = true;
+%simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
