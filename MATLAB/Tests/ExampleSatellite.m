@@ -18,9 +18,9 @@ simConfig.enableMTQ = true;
 %simConfig.enableMTQ = false;
 
 simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
+%simConfig.enablePropulsion = false;
 simConfig.enablePropulsionInertia = true;
-simConfig.enablePropulsionInertia = false;
+%simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
@@ -31,9 +31,9 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 500;
+simConfig.secondReferenceQuaternionTime = 300;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 1500;
+simConfig.thirdReferenceQuaternionTime = 900;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -87,10 +87,10 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 % MPC WaterJet 1s * 10 = 10s pred
 
 timestep_pd = 0.1;
-timestep_controller = 5; % 2;
-timestep_prediction = 5; % 2;
-prediction_horizon = 40;% 10; % 10
-duration = 2500; %numSteps*stepLength;
+timestep_controller = 1; % 2;
+timestep_prediction = 1; % 2;
+prediction_horizon = 50;% 10; % 10
+duration = 1500; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
