@@ -4,7 +4,7 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 2;
+satelliteConfiguration = 1;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
@@ -29,13 +29,13 @@ eulerThird = -pi/5;
 simConfig.enablePointing = false;
 %simConfig.pointingTarget_LLA = [63.4184922, 10.4005655, 0];
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
-simConfig.enableQuatRef = false;
+simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
 simConfig.secondReferenceQuaternionTime = 300;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
 simConfig.thirdReferenceQuaternionTime = 900;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
-simConfig.enableOmegaRef = true;
+simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
 simConfig.secondReferenceOmegaTime = 30;
 simConfig.secondReferenceOmega = [0.0125; 0; 0];
@@ -89,7 +89,7 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
-prediction_horizon = 50;% 10; % 10
+prediction_horizon = 150;% 10; % 10
 duration = 1500; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
