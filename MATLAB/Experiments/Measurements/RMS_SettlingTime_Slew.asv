@@ -1,0 +1,57 @@
+
+
+timestep = 1;
+firstRefTime = 30;
+secondRefTime = 90;
+velSettlingTolerance = 0.99999;
+
+
+qError = zeros(length(quaternions), 4);
+for quatIter = 1:length(quaternions(:,1))
+    qError(quatIter,:) = QuaternionProduct( QuaternionInverse( quatRef(:, quatIter) ), quaternions(quatIter,:)' );
+end
+
+
+
+rmsTotal = ErrorVelRMS( qError, 1 )
+
+firstSettleTime = VelSettlingTime( qError, velSettlingTolerance, firstRefTime, firstRefTime + 39, timestep )
+
+secondSettleTime = VelSettlingTime( qError, velSettlingTolerance, secondRefTime, secondRefTime + 45, timestep )
+
+averageSettlingTime = (firstSettleTime + secondSettleTime)/2
+
+settledRms = ErrorVelRMS( qError, (secondRefTime + secondSettleTime)/timestep )
+
+
+
+function rms = ErrorVelRMS( velVec, refVel, startingIter )
+
+rms = sqrt(mean((velVec(startingIter:end) - refVel .* ones(length(velVec(startingIter:end)),1)).^2));
+
+end
+
+
+function settlingTime = VelSettlingTime( errorQuat, quatSettlingTolerance, refTime, endTime, timestep )
+
+isSettled = false;
+settlingTime = -1;
+
+for indexIter = 0:1:((endTime-refTime)/timestep)
+    
+    if ( errorQuat(refTime/timestep + indexIter, 1) >= quatSettlingTolerance ) && isSettled == false
+
+        settlingTime = indexIter*timestep;
+        isSettled = true;
+
+    elseif ( errorQuat(refTime/timestep + indexIter, 1) < quatSettlingTolerance ) && isSettled == true
+        
+        settlingTime = -1;
+        isSettled = false;
+        
+    end
+
+end
+
+end
+
