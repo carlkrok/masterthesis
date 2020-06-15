@@ -1,9 +1,13 @@
 
 
-timestep = 0.1;
-firstRefTime = 30;
-secondRefTime = 90;
+timestep = 1;
+firstRefTime = 300;
+secondRefTime = 900;
 quatSettlingTolerance = 0.99999;
+
+quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_controller)+1), ...
+    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_controller), ...
+    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_controller)];
 
 
 qError = zeros(length(quaternions), 4);
@@ -15,9 +19,9 @@ end
 
 rmsTotal = ErrorQuatRMS( qError, 1 )
 
-firstSettleTime = QuatSettlingTime( qError, quatSettlingTolerance, firstRefTime, firstRefTime + 39, timestep )
+firstSettleTime = QuatSettlingTime( qError, quatSettlingTolerance, firstRefTime, firstRefTime + 300, timestep )
 
-secondSettleTime = QuatSettlingTime( qError, quatSettlingTolerance, secondRefTime, secondRefTime + 45, timestep )
+secondSettleTime = QuatSettlingTime( qError, quatSettlingTolerance, secondRefTime, secondRefTime + 450, timestep )
 
 averageSettlingTime = (firstSettleTime + secondSettleTime)/2
 
