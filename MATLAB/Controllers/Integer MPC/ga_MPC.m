@@ -12,7 +12,7 @@ global satelliteConfiguration
 rw_vel = Y0(8:11);
 
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
-    attitude_weight = 1e15; % 1e8; % 1e15; % 1e9;
+    attitude_weight = 1e15; % 1e15; % 1e15; % 1e9;
 elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
     attitude_weight = 1e15; % 1e8; % 1e15;
 else
