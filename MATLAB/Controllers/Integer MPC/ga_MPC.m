@@ -14,7 +14,7 @@ rw_vel = Y0(8:11);
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
     attitude_weight = 5e13; % 1e15; % 1e15; % 1e9;
 elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-    attitude_weight = 5e13; % 1e15; % 1e8; % 1e15;
+    attitude_weight = 1e14; % 1e15; % 1e8; % 1e15;
 else
     attitude_weight = 0;
 end
@@ -36,7 +36,7 @@ if simConfig.enableRW
         rw_momentum_weight = 1e6;
         % rw_momentum_weight = 1e3; % 1e-15; % 100
     elseif satelliteConfiguration == 1 
-        rw_momentum_weight = 1e6;
+        rw_momentum_weight = 1e1;
         % rw_momentum_weight = 1e3; % 1e5; % 100
     end
     if simConfig.enableOmegaRef && satelliteConfiguration == 2
