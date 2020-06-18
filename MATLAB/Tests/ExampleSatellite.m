@@ -4,7 +4,7 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 1;
+satelliteConfiguration = 2;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
@@ -91,12 +91,12 @@ timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
 prediction_horizon = 250;% 10; % 10
 duration = 150; %numSteps*stepLength;
-% eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
-%     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
-%     numThrusters, numPropellant );
-eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
-    timestep_pd, duration, prediction_horizon, numControlVariables, ...
+eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
+    timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
+% eph = SimulateSatellite_RWPD( t0_MJD, satelliteFilename, ...
+%     timestep_pd, duration, prediction_horizon, numControlVariables, ...
+%     numThrusters, numPropellant );
 
 
 timeVec = eph(:,1);
