@@ -24,7 +24,7 @@ R_PQWToECI = RotMat_PQWToECI( sat.initCond.orb_i, sat.initCond.orb_O, ...
     sat.initCond.orb_w );
 r_ECI = R_PQWToECI * r_PQW;
 v_ECI = R_PQWToECI * v_PQW;
-
+% 
 Y0 = [ r_ECI; v_ECI; sat.initCond.q_ECI; sat.initCond.w_body; sat.rw.w; ...
     sat.constr.Ixx_struct; sat.constr.Iyy_struct; sat.constr.Izz_struct; ...
     sat.constr.Ixy_struct; sat.constr.Ixz_struct; sat.constr.Iyz_struct]; 
@@ -33,9 +33,10 @@ for propIter = 1:numPropellant
 end
 Y0 = [Y0; sat.constr.body_init_com_struct];
 
-    
 U0 = zeros(numControlVariables,1);
 
+% Y0 = [1954627.66790302,6102691.11864510,-2505020.17748898,7296.44014797053,-2002.16831050751,818.435864901735,0.999910590349581,0.00251313282602350,0.0131253075887502,0.000470925507900188,4.50972922069653e-05,-1.53956727657839e-05,-0.000153140765947649,408.698224373349,347.969046073036,-20.2942036315677,-282.107873170941,0.0816615034341647,0.102235925370316,0.0304910843486569,5.14377818455349e-23,4.77361558203861e-23,-4.96103096898219e-20,999.840468909277,0.113150000000000,0.0500000000000000,0.183800564090213]';
+% U0 = zeros(numControlVariables,1);
 
 rwData.A_mat = sat.rw.A_mat;
 rwData.A_MPinv_mat = sat.rw.A_MPinv_mat;
