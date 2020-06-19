@@ -4,7 +4,7 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 1;
+satelliteConfiguration = 2;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
@@ -14,8 +14,8 @@ simConfig.enableGravityGradient = true;
 simConfig.enableRW = true;
 %simConfig.enableRW = false;
 
-simConfig.enableMTQ = true;
-%simConfig.enableMTQ = false;
+%simConfig.enableMTQ = true;
+simConfig.enableMTQ = false;
 
 simConfig.enablePropulsion = true;
 %simConfig.enablePropulsion = false;
@@ -89,7 +89,7 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
-prediction_horizon = 1;% 10; % 10
+prediction_horizon = 3;% 10; % 10
 duration = 3600; %numSteps*stepLength;
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
@@ -98,6 +98,8 @@ eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controll
 %     timestep_pd, duration, prediction_horizon, numControlVariables, ...
 %     numThrusters, numPropellant );
 
+
+save('E3_MTQ_3600s')
 
 timeVec = eph(:,1);
 
@@ -232,4 +234,4 @@ PlotOmegaDot( plotData.wdot_sat_body );
 
 %%
 
-%save('e1')
+

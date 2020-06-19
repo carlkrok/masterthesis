@@ -12,7 +12,7 @@ global satelliteConfiguration
 rw_vel = Y0(8:11);
 
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
-    attitude_weight = 5e13; % 1e15; % 1e15; % 1e9;
+    attitude_weight = 1e14; % 5e13; % 1e15; % 1e15; % 1e9;
 elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
     attitude_weight = 1e14; % 1e15; % 1e8; % 1e15;
 else
@@ -82,7 +82,7 @@ if simConfig.enablePropulsion
     end
     
     if satelliteConfiguration == 2 && simConfig.enableQuatRef
-        thrust_weight = 1e14*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e12*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
         thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
