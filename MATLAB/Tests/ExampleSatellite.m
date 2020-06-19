@@ -99,7 +99,6 @@ eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controll
 %     timestep_pd, duration, prediction_horizon, numControlVariables, ...
 %     numThrusters, numPropellant );
 
-save('E3_NanoFEEP_3600s_2nd')
 
 save('E3_MTQ_3600s')
 
