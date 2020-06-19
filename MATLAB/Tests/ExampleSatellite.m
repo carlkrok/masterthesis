@@ -4,7 +4,7 @@ global satelliteConfiguration
 global simConfig
 
 % Choose satellite configuration
-satelliteConfiguration = 2;
+satelliteConfiguration = 1;
 
 simConfig.enableJ2 = true;
 simConfig.enableDrag = true;
@@ -14,13 +14,13 @@ simConfig.enableGravityGradient = true;
 simConfig.enableRW = true;
 %simConfig.enableRW = false;
 
-simConfig.enableMTQ = true;
-%simConfig.enableMTQ = false;
+%simConfig.enableMTQ = true;
+simConfig.enableMTQ = false;
 
-%simConfig.enablePropulsion = true;
-simConfig.enablePropulsion = false;
-%simConfig.enablePropulsionInertia = true;
-simConfig.enablePropulsionInertia = false;
+simConfig.enablePropulsion = true;
+%simConfig.enablePropulsion = false;
+simConfig.enablePropulsionInertia = true;
+%simConfig.enablePropulsionInertia = false;
 
 eulerFirst = pi/3;
 eulerSecond = pi/8;
@@ -31,9 +31,9 @@ simConfig.enablePointing = false;
 %simConfig.pointingTarget_ECEF = LLAToECEF( simConfig.pointingTarget_LLA );
 simConfig.enableQuatRef = true;
 simConfig.firstReferenceQuaternion = [1; 0; 0; 0];
-simConfig.secondReferenceQuaternionTime = 30;
+simConfig.secondReferenceQuaternionTime = 3700;
 simConfig.secondReferenceQuaternion = EulerToQuaternion(eulerFirst,eulerSecond,eulerThird);
-simConfig.thirdReferenceQuaternionTime = 90;
+simConfig.thirdReferenceQuaternionTime = 3701;
 simConfig.thirdReferenceQuaternion = [1; 0; 0; 0];
 simConfig.enableOmegaRef = false;
 simConfig.firstReferenceOmega = [0; 0; 0];
@@ -89,8 +89,9 @@ sat_period = SatellitePeriod( MU_EARTH, sat.initCond.orb_a );
 timestep_pd = 0.1;
 timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
-prediction_horizon = 250;% 10; % 10
-duration = 150; %numSteps*stepLength;
+prediction_horizon = 3;% 10; % 10
+duration = 3600; %numSteps*stepLength;
+
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
@@ -98,6 +99,7 @@ eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controll
 %     timestep_pd, duration, prediction_horizon, numControlVariables, ...
 %     numThrusters, numPropellant );
 
+save('E3_NanoFEEP_3600s_2nd')
 
 timeVec = eph(:,1);
 
@@ -163,9 +165,9 @@ quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenc
     simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_controller), ...
     simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_controller)];
 
-quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
-    simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
-    simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
+% quatRef = [simConfig.firstReferenceQuaternion * ones(1,(simConfig.secondReferenceQuaternionTime/timestep_pd)+1), ...
+%     simConfig.secondReferenceQuaternion * ones(1,(simConfig.thirdReferenceQuaternionTime-simConfig.secondReferenceQuaternionTime)/timestep_pd), ...
+%     simConfig.thirdReferenceQuaternion * ones(1,(duration-simConfig.thirdReferenceQuaternionTime)/timestep_pd)];
 
 
 PlotQuaternionError( quatRef, quaternions, timeVec)
@@ -232,4 +234,4 @@ PlotOmegaDot( plotData.wdot_sat_body );
 
 %%
 
-%save('e1')
+%

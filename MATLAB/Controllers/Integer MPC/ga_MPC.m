@@ -12,9 +12,9 @@ global satelliteConfiguration
 rw_vel = Y0(8:11);
 
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
-    attitude_weight = 1e15; % 1e8; % 1e15; % 1e9;
+    attitude_weight = 5e13; % 1e15; % 1e9;
 elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-    attitude_weight = 1e15; % 1e8; % 1e15;
+    attitude_weight = 1e14; % 5e13; % 1e15; % 1e8; % 1e15;
 else
     attitude_weight = 0;
 end
@@ -33,8 +33,8 @@ if simConfig.enableRW
     rw_actuation_weights = 1e6*(rwData.idlePower + 1/rwData.efficiency .* ...
         rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
     if satelliteConfiguration == 2
-        rw_momentum_weight = 1e6;
-        % rw_momentum_weight = 1e3; % 1e-15; % 100
+        % rw_momentum_weight = 1e6;
+        rw_momentum_weight = 1e6; % 1e-15; % 100
     elseif satelliteConfiguration == 1 
         rw_momentum_weight = 1e6;
         % rw_momentum_weight = 1e3; % 1e5; % 100
@@ -84,7 +84,7 @@ if simConfig.enablePropulsion
     if satelliteConfiguration == 2 && simConfig.enableQuatRef
         thrust_weight = 1e14*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-        thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e6*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
 else
     thrust_weight = 0;

@@ -5,15 +5,12 @@ firstRefTime = 30;
 secondRefTime = 90;
 velSettlingTolerance = 0.99999;
 
-
-qError = zeros(length(quaternions), 4);
-for quatIter = 1:length(quaternions(:,1))
-    qError(quatIter,:) = QuaternionProduct( QuaternionInverse( quatRef(:, quatIter) ), quaternions(quatIter,:)' );
-end
+omegaRef = [simConfig.firstReferenceOmega * ones(1,(simConfig.secondReferenceOmegaTime/timestep)+1), ...
+    simConfig.secondReferenceOmega * ones(1,(simConfig.thirdReferenceOmegaTime-simConfig.secondReferenceOmegaTime+1)/timestep), ...
+    simConfig.thirdReferenceOmega * ones(1,(duration-simConfig.thirdReferenceOmegaTime+1)/timestep)];
 
 
-
-rmsTotal = ErrorVelRMS( qError, 1 )
+rmsTotal = ErrorVelRMS( omega(:,1), omegaRef, 1 )
 
 firstSettleTime = VelSettlingTime( qError, velSettlingTolerance, firstRefTime, firstRefTime + 39, timestep )
 
@@ -21,8 +18,7 @@ secondSettleTime = VelSettlingTime( qError, velSettlingTolerance, secondRefTime,
 
 averageSettlingTime = (firstSettleTime + secondSettleTime)/2
 
-settledRms = ErrorVelRMS( qError, (secondRefTime + secondSettleTime)/timestep )
-
+settledRms = ErrorVelRMS( velVec, refVel, (secondRefTime + secondSettleTime)/timestep )
 
 
 function rms = ErrorVelRMS( velVec, refVel, startingIter )
@@ -32,19 +28,19 @@ rms = sqrt(mean((velVec(startingIter:end) - refVel .* ones(length(velVec(startin
 end
 
 
-function settlingTime = VelSettlingTime( errorQuat, quatSettlingTolerance, refTime, endTime, timestep )
+function settlingTime = VelSettlingTime( velVec, velSettlingTolerance, refVel, refTime, endTime, timestep )
 
 isSettled = false;
 settlingTime = -1;
 
 for indexIter = 0:1:((endTime-refTime)/timestep)
     
-    if ( errorQuat(refTime/timestep + indexIter, 1) >= quatSettlingTolerance ) && isSettled == false
+    if ( abs(velVec(refTime/timestep + indexIter) - refVel) <= velSettlingTolerance ) && isSettled == false
 
         settlingTime = indexIter*timestep;
         isSettled = true;
 
-    elseif ( errorQuat(refTime/timestep + indexIter, 1) < quatSettlingTolerance ) && isSettled == true
+    elseif ( abs(velVec(refTime/timestep + indexIter) - refVel) > velSettlingTolerance ) && isSettled == true
         
         settlingTime = -1;
         isSettled = false;
