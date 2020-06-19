@@ -14,11 +14,11 @@ rw_vel = Y0(8:11);
 if satelliteConfiguration == 2 && simConfig.enableQuatRef
     attitude_weight = 1e14; % 5e13; % 1e15; % 1e15; % 1e9;
 elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-    attitude_weight = 1e14; % 1e15; % 1e8; % 1e15;
+    attitude_weight = 1e14; % 5e13; % 1e15; % 1e8; % 1e15;
 else
     attitude_weight = 0;
 end
-    
+
 attitude_eta_weight = 0;
 
 if simConfig.enableOmegaRef
@@ -31,22 +31,22 @@ end
 if simConfig.enableRW
     % rw_actuation_weights = 100*(rwData.idlePower + 1/rwData.efficiency .* ...
     rw_actuation_weights = 1e6*(rwData.idlePower + 1/rwData.efficiency .* ...
-        rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
+        rwData.I_mat * (rw_vel_ref .* ones(4,1)));
     if satelliteConfiguration == 2
+        % rw_momentum_weight = 1e6;
+        rw_momentum_weight = 1e6; % 1e-15; % 100
+    elseif satelliteConfiguration == 1
         rw_momentum_weight = 1e6;
-        % rw_momentum_weight = 1e3; % 1e-15; % 100
-    elseif satelliteConfiguration == 1 
-        rw_momentum_weight = 1e1;
         % rw_momentum_weight = 1e3; % 1e5; % 100
     end
     if simConfig.enableOmegaRef && satelliteConfiguration == 2
         rw_momentum_weight = 5e5;
         rw_actuation_weights = 1e8*(rwData.idlePower + 1/rwData.efficiency .* ...
-            rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
-    elseif simConfig.enableOmegaRef && satelliteConfiguration == 1 
+            rwData.I_mat * (rw_vel_ref .* ones(4,1)));
+    elseif simConfig.enableOmegaRef && satelliteConfiguration == 1
         rw_momentum_weight = 1e4; % 1e4; % 100
 %         rw_actuation_weights = 1e6*(rwData.idlePower + 1/rwData.efficiency .* ...
-%             rwData.I_mat * (rw_vel_ref .* ones(4,1))); 
+%             rwData.I_mat * (rw_vel_ref .* ones(4,1)));
     end
 else
     rw_actuation_weights = zeros(4,1);
@@ -55,19 +55,19 @@ end
 
 if simConfig.enableMTQ
     mtq_weight = mtqData.powerFactor;
-    
+
 %     if satelliteConfiguration == 2 && simConfig.enableOmegaRef
-%         mtq_weight = 1e12*mtq_weight; 
+%         mtq_weight = 1e12*mtq_weight;
 %     end
-        
+
     if satelliteConfiguration == 1 && simConfig.enableOmegaRef
-        mtq_weight = 1e3*mtq_weight; 
+        mtq_weight = 1e3*mtq_weight;
     end
-    
+
 %     if satelliteConfiguration == 2 && simConfig.enableQuatRef
-%         mtq_weight = 1e14*mtq_weight; 
+%         mtq_weight = 1e14*mtq_weight;
 %     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-%         mtq_weight = 1e9*mtq_weight; 
+%         mtq_weight = 1e9*mtq_weight;
 %     end
 else
     mtq_weight = 0;
@@ -80,11 +80,11 @@ if simConfig.enablePropulsion
     elseif satelliteConfiguration == 1 && simConfig.enableOmegaRef
         thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
-    
+
     if satelliteConfiguration == 2 && simConfig.enableQuatRef
         thrust_weight = 1e12*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     elseif satelliteConfiguration == 1 && simConfig.enableQuatRef
-        thrust_weight = 1e9*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
+        thrust_weight = 1e6*thrust_weight; % 5e8*thrust_weight; % 1e3* % 5e8*thrust_weight
     end
 else
     thrust_weight = 0;
@@ -104,19 +104,19 @@ end
 U_int_index = U_int_index_0;
 
 for horizonIter = 2:prediction_horizon
-    
+
     A_chi = [A_chi; A_disc^horizonIter];
-    
+
     B_chi_row = A_disc^(prediction_horizon-1)*B_disc;
     for bMatIter = 1:(horizonIter-1)
         B_chi_row = [B_chi_row, A_disc^(horizonIter-1-bMatIter)*B_disc];
     end
     B_chi_row = [B_chi_row,zeros(size_b_disc(1),(prediction_horizon-horizonIter)*size_b_disc(2))];
-    
+
     B_chi = [B_chi; B_chi_row];
-    
+
     U_int_index = [U_int_index; U_int_index_0+(horizonIter-1)*numControlVariables];
-  
+
 end
 
 chi_0 = A_chi * Y0; % - X_ref;
@@ -157,12 +157,12 @@ options = optimoptions('ga', 'Display', 'off', 'MaxTime', 30); %, ...
     %'PopulationSize', 500); %, 'PlotFcn', @gaplotbestf);
 
 x = ga(@( U ) ga_CostFn( U, c, D, e, U_int_index ), ...
-    numControlVariables*prediction_horizon,A_u,b_u, ... [],[], ... 
+    numControlVariables*prediction_horizon,A_u,b_u, ... [],[], ...
     [],[],repmat(U_lb,prediction_horizon,1), ...
     repmat(U_ub,prediction_horizon,1),[],U_int_index, options);
 
 % options = optimoptions('surrogateopt', 'Display', 'off', 'MaxTime', 5, 'PlotFcn', []);
-%     
+%
 % x = surrogateopt(@( U ) surrogate_CostFn( U, c, D, e, U_int_index, A_u,b_u ), ...
 %     repmat(U_lb,prediction_horizon,1), ...
 %     repmat(U_ub,prediction_horizon,1), ...
@@ -176,4 +176,3 @@ U = x(1:numControlVariables)';
 
 
 end
-

@@ -91,6 +91,7 @@ timestep_controller = 1; % 2;
 timestep_prediction = 1; % 2;
 prediction_horizon = 3;% 10; % 10
 duration = 3600; %numSteps*stepLength;
+
 eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controller, ...
     timestep_prediction, duration, prediction_horizon, numControlVariables, ...
     numThrusters, numPropellant );
@@ -98,6 +99,7 @@ eph = SimulateSatellite_integerMPC( t0_MJD, satelliteFilename, timestep_controll
 %     timestep_pd, duration, prediction_horizon, numControlVariables, ...
 %     numThrusters, numPropellant );
 
+save('E3_NanoFEEP_3600s_2nd')
 
 save('E3_MTQ_3600s')
 
@@ -233,5 +235,3 @@ PlotMTQDipole( plotData.mtq_m )
 PlotOmegaDot( plotData.wdot_sat_body );
 
 %%
-
-
